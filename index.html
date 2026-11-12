@@ -561,7 +561,7 @@ window.addEventListener('beforeunload', (e) => { if (FS.pendiente) { e.preventDe
 
 'use strict';
 /* ===== GUARDADO EN GOOGLE DRIVE (solo cuando la app se abre desde una dirección web https) ===== */
-const DRIVE_CLIENT_ID = '';
+const DRIVE_CLIENT_ID = '902512775407-g4sa6e52fkukva6cmcf2a4tdph21k2qe.apps.googleusercontent.com';
 const DRIVE_FILE = 'control_clases_datos.json';
 const DRV = { token: null, exp: 0, fileId: null, modified: null, estado: 'nuevo', error: '', ultimo: null, ocupado: false };
 const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
