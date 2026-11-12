@@ -1,0 +1,1310 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Control de clases</title>
+<style>:root{--bg:#f3f6fa;--card:#fff;--ink:#1f2933;--muted:#6b7785;--line:#d9e0e7;--primary:#1f4e79;--primary-soft:#e4eef8;--ok:#2e7d32;--ok-soft:#e5f3e6;--danger:#c62828;--danger-soft:#fdeaea;--warn:#b26a00;--warn-soft:#fff1d6;--grey:#d9d9d9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,"Segoe UI",Arial,sans-serif}
+header.top{background:var(--primary);color:#fff;display:flex;align-items:center;gap:16px;padding:0 20px;position:sticky;top:0;z-index:20;height:52px}
+header.top h1{font-size:17px;margin:0;font-weight:700;white-space:nowrap}
+nav.tabs{display:flex;gap:2px;flex:1}
+nav.tabs button{background:none;border:0;color:#cfe0f1;font:inherit;font-weight:600;padding:16px 14px;cursor:pointer;border-bottom:3px solid transparent}
+nav.tabs button:hover{color:#fff}
+nav.tabs button.on{color:#fff;border-bottom-color:#fff}
+.estado{display:flex;align-items:center;gap:8px;font-size:12px}
+.estado .pill{padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.18);cursor:pointer;white-space:nowrap}
+.estado .pill.warn{background:var(--warn-soft);color:var(--warn);font-weight:700}
+.estado .pill.ok{background:rgba(255,255,255,.22)}
+main#vista{padding:18px 20px 60px;max-width:1500px;margin:0 auto}
+.banner{background:var(--warn-soft);color:#6b4500;border-bottom:1px solid #f0d28a;padding:9px 20px;display:flex;gap:12px;align-items:center}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:14px;margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.col{display:flex;flex-direction:column;gap:4px}
+.grow{flex:1}
+label.lbl{font-size:12px;color:var(--muted);font-weight:600}
+input,select,textarea{font:inherit;border:1px solid #bcc7d3;border-radius:6px;padding:6px 8px;background:#fff;color:var(--ink);min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid #8fb6dc;border-color:#5b8db8}
+input[type=number]{width:90px}
+.btn{font:inherit;font-weight:600;border:1px solid #bcc7d3;background:#fff;color:var(--ink);padding:7px 14px;border-radius:7px;cursor:pointer}
+.btn:hover{background:#eef2f6}
+.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.primary:hover{background:#17405f}
+.btn.ok{background:var(--ok);color:#fff;border-color:var(--ok)}.btn.ok:hover{background:#256628}
+.btn.danger{background:#fff;color:var(--danger);border-color:#e6b0b0}.btn.danger:hover{background:var(--danger-soft)}
+.btn.sm{padding:3px 9px;font-size:12px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+table.t{border-collapse:collapse;width:100%;background:#fff}
+table.t th{background:#eaf0f6;text-align:left;font-size:12px;color:#33475b;padding:7px 9px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+table.t td{padding:6px 9px;border-bottom:1px solid #eef1f4;vertical-align:middle}
+table.t tr:hover td{background:#fafcfe}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}.small{font-size:12px}.bold{font-weight:700}
+.neg{color:var(--danger);font-weight:700}.pos{color:var(--ok);font-weight:700}
+.chip{display:inline-block;padding:2px 9px;border-radius:10px;font-size:12px;font-weight:600;background:var(--primary-soft);color:var(--primary)}
+.chip.priv{background:var(--ok-soft);color:var(--ok)}
+.seg{display:inline-flex;border:1px solid #bcc7d3;border-radius:7px;overflow:hidden}
+.seg button{font:inherit;border:0;background:#fff;padding:5px 11px;cursor:pointer;border-right:1px solid #bcc7d3;color:var(--ink)}
+.seg button:last-child{border-right:0}
+.seg button.on.asistio{background:var(--ok);color:#fff}
+.seg button.on.aviso{background:#2f6fb0;color:#fff}
+.seg button.on.sin{background:var(--danger);color:#fff}
+.chk{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.chk input{width:17px;height:17px}
+.split{display:grid;grid-template-columns:minmax(230px,300px) 1fr minmax(260px,340px);gap:14px;align-items:start}
+@media(max-width:1250px){.split{grid-template-columns:240px 1fr}.split .lista{grid-column:1/-1}}
+.glist .item{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer;background:#fff}
+.glist .item:hover{background:#f3f8fd}
+.glist .item.sel{background:var(--primary-soft);border-color:#8fb6dc;font-weight:700}
+.glist .item.dis{opacity:.45;cursor:not-allowed}
+.gblock{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:hidden;background:#fff}
+.gblock.anulada{opacity:.55}
+.ghead{display:flex;align-items:center;gap:12px;background:var(--primary-soft);padding:8px 12px;font-weight:700}
+.ghead.priv{background:var(--ok-soft)}
+.alu{display:grid;grid-template-columns:minmax(150px,1fr) auto auto;gap:12px;align-items:center;padding:6px 12px;border-top:1px solid #eef1f4}
+.alu .imp{font-size:12px;color:var(--muted);min-width:60px;text-align:right}
+.plist .it{display:flex;gap:8px;align-items:center;padding:6px 8px;border-bottom:1px solid #eef1f4;cursor:pointer}
+.plist .it:hover{background:#f3f8fd}.plist .it.sel{background:var(--warn-soft)}
+.matrix{border-collapse:collapse;font-size:12px}
+.matrix th,.matrix td{border:1px solid #e3e8ee;padding:2px 3px;text-align:center;min-width:26px;height:26px}
+.matrix th.d{background:#1f4e79;color:#fff;writing-mode:vertical-rl;transform:rotate(180deg);height:58px;padding:4px 2px;font-weight:600}
+.matrix th.n,.matrix td.n{text-align:left;min-width:210px;position:sticky;left:0;background:#fff;z-index:1}
+.matrix tr.gh td{background:#dde9f5;font-weight:700}.matrix tr.gh.priv td{background:#e0f0dd}
+.matrix td.s{color:var(--danger);font-weight:700}.matrix td.a{color:#2f6fb0;font-weight:700}.matrix td.ok{color:var(--ok);font-weight:700}
+.matrix td.nc{background:#ffc000!important}.matrix td.gr{background:#d9d9d9}
+.modal-bg{position:fixed;inset:0;background:rgba(20,30,40,.45);display:flex;align-items:center;justify-content:center;z-index:100}
+.modal{background:#fff;border-radius:12px;padding:20px;max-width:520px;width:92%;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.modal h3{font-size:16px}.modal .btns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1f2933;color:#fff;padding:10px 18px;border-radius:9px;z-index:200;box-shadow:0 6px 20px rgba(0,0,0,.3);max-width:80%}
+.toast.err{background:var(--danger)}.toast.ok{background:var(--ok)}
+.combo{position:relative;display:inline-block}
+.combo .list{position:absolute;top:100%;left:0;min-width:100%;max-height:260px;overflow:auto;background:#fff;border:1px solid #8fb6dc;border-radius:7px;box-shadow:0 8px 24px rgba(0,0,0,.18);z-index:50}
+.combo .list div{padding:6px 10px;cursor:pointer;white-space:nowrap}.combo .list div.hi,.combo .list div:hover{background:var(--primary-soft)}
+.subtabs{display:flex;gap:6px;margin-bottom:14px}.subtabs button{font:inherit;font-weight:600;border:1px solid var(--line);background:#fff;border-radius:18px;padding:5px 14px;cursor:pointer}
+.subtabs button.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.kpis{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 16px;min-width:150px}
+.kpi .v{font-size:20px;font-weight:700}.kpi .l{font-size:12px;color:var(--muted)}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+
+@media(max-width:760px){
+ header.top{height:auto;flex-wrap:wrap;padding:6px 10px;gap:6px}
+ nav.tabs{order:3;flex:1 0 100%;overflow-x:auto}
+ nav.tabs button{padding:10px 10px;white-space:nowrap}
+ .split{grid-template-columns:1fr}
+ .alu{grid-template-columns:1fr;gap:6px}
+ table.t th{position:static}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Control de clases</h1>
+  <nav class="tabs" id="tabs"></nav>
+  <div class="estado" id="estado"></div>
+</header>
+<div id="banner"></div>
+<main id="vista"></main>
+<script>'use strict';
+/* ===== NUCLEO: datos, utilidades, persistencia (sin DOM) ===== */
+const ESTADO_TXT = { asistio: 'Asistió', aviso: 'Falta con aviso', sin: 'Falta sin aviso' };
+const SIMB = { asistio: '✓', aviso: 'A', sin: 'S' };
+const CURSOS_INI = ['1º ESO', '2º ESO', '3º ESO', '4º ESO', '1º Bach', '2º Bach'];
+const ASIG_INI = ['Matemáticas', 'Matemáticas CCSS', 'Física y Química', 'Física', 'Química'];
+const OFERTA_INI = {
+  '1º ESO': ['Matemáticas'], '2º ESO': ['Matemáticas', 'Física y Química'], '3º ESO': ['Matemáticas', 'Física y Química'],
+  '4º ESO': ['Matemáticas', 'Matemáticas CCSS', 'Física y Química'],
+  '1º Bach': ['Matemáticas', 'Matemáticas CCSS', 'Física y Química'],
+  '2º Bach': ['Matemáticas', 'Matemáticas CCSS', 'Física', 'Química'],
+};
+// [asignatura, curso, tipo, franja]
+const GRUPOS_INI = [
+  ['Matemáticas', '1º ESO', 'AMPA', 1], ['Matemáticas', '2º ESO', 'AMPA', 1],
+  ['Matemáticas', '3º ESO', 'AMPA', 2], ['Matemáticas', '4º ESO', 'AMPA', 2],
+  ['Física y Química', '2º ESO', 'AMPA', 3],
+  ['Física y Química', '3º ESO', 'AMPA', 4], ['Física y Química', '4º ESO', 'AMPA', 4],
+  ['Matemáticas CCSS', '1º Bach', 'AMPA', 5], ['Matemáticas', '1º Bach', 'AMPA', 5], ['Física y Química', '1º Bach', 'AMPA', 5],
+  ['Matemáticas CCSS', '2º Bach', 'Privado', 6],
+];
+const TRIM_INI = [['26-27 T1', '2026-09-08', '2026-12-22'], ['26-27 T2', '2027-01-11', '2027-03-19'], ['26-27 T3', '2027-03-30', '2027-06-22']];
+
+function seedData() {
+  const d = {
+    version: 1, seq: {}, cursos: [], asignaturas: [], oferta: [], alumnos: [], grupos: [], inscripciones: [],
+    trimestres: [], ajustes: { tarifaAmpa: 15, precioAlumnoAmpa: 3, privIndividual: 7, privGrupo: 5 },
+    partes: [], pagosAmpa: [], ingresos: [], exencionesPrevias: [],
+  };
+  const nid = (k) => (d.seq[k] = (d.seq[k] || 0) + 1);
+  CURSOS_INI.forEach((n, i) => d.cursos.push({ id: nid('curso'), nombre: n, orden: i + 1 }));
+  ASIG_INI.forEach((n) => d.asignaturas.push({ id: nid('asig'), nombre: n }));
+  const cid = (n) => d.cursos.find((c) => c.nombre === n).id, aid = (n) => d.asignaturas.find((a) => a.nombre === n).id;
+  Object.keys(OFERTA_INI).forEach((c) => OFERTA_INI[c].forEach((a) => d.oferta.push([aid(a), cid(c)])));
+  GRUPOS_INI.forEach(([a, c, t, f]) => d.grupos.push({ id: nid('grupo'), asigId: aid(a), cursoId: cid(c), tipo: t, franja: f, activo: true }));
+  d.seq.franja = 6;
+  TRIM_INI.forEach(([n, i, f]) => d.trimestres.push({ id: nid('trim'), nombre: n, inicio: i, fin: f }));
+  return d;
+}
+
+let db = seedData();
+let _saveHook = null;
+function commit() { if (_saveHook) _saveHook(); }
+function nextId(kind) { db.seq[kind] = (db.seq[kind] || 0) + 1; return db.seq[kind]; }
+function setData(obj) {
+  if (!obj || typeof obj !== 'object' || !Array.isArray(obj.grupos) || !Array.isArray(obj.partes)) throw new Error('El archivo no parece de Control de clases.');
+  const base = seedData();
+  db = Object.assign({}, base, obj);
+  db.ajustes = Object.assign({}, base.ajustes, obj.ajustes || {});
+  db.seq = obj.seq || {};
+}
+
+/* ---------- utilidades ---------- */
+const round2 = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
+const eur = (n) => (n == null || isNaN(n) ? '' : round2(n).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €');
+const pad = (n) => String(n).padStart(2, '0');
+function todayISO() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+function fmtFecha(iso) { if (!iso) return ''; const [y, m, d] = iso.split('-'); return `${d}/${m}/${y}`; }
+function fmtCorta(iso) { const [, m, d] = iso.split('-'); return `${d}/${m}`; }
+function isoValida(s) { return /^\d{4}-\d{2}-\d{2}$/.test(s || '') && !isNaN(new Date(s + 'T00:00:00')); }
+function diaSemana(iso) { return ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'][new Date(iso + 'T00:00:00').getDay()]; }
+const byId = (list, id) => list.find((x) => x.id === id);
+const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const cursoNombre = (id) => (byId(db.cursos, id) || {}).nombre || '—';
+const asigNombre = (id) => (byId(db.asignaturas, id) || {}).nombre || '—';
+const alumnoNombre = (id) => (byId(db.alumnos, id) || {}).nombre || '?';
+function grupoNombre(g) { return typeof g === 'number' ? grupoNombre(byId(db.grupos, g) || { asigId: 0, cursoId: 0, tipo: '?' }) : `${asigNombre(g.asigId)} ${cursoNombre(g.cursoId)} (${g.tipo})`; }
+const grupoById = (id) => byId(db.grupos, id);
+function trimestreDe(fecha) { return db.trimestres.find((t) => fecha >= t.inicio && fecha <= t.fin) || null; }
+function parteTrimId(p) { if (p.trimestreForzado) return p.trimestreForzado; const t = trimestreDe(p.fecha); return t ? t.id : null; }
+const trimNombre = (id) => (byId(db.trimestres, id) || {}).nombre || '—';
+function enOferta(asigId, cursoId) { return db.oferta.some(([a, c]) => a === asigId && c === cursoId); }
+function inscritoEn(alumnoId, grupoId, fecha) {
+  return db.inscripciones.some((i) => i.alumnoId === alumnoId && i.grupoId === grupoId && i.alta <= fecha && (!i.baja || fecha < i.baja));
+}
+function alumnosDeGrupo(grupoId, fecha) {
+  const seen = new Set();
+  db.inscripciones.forEach((i) => { if (i.grupoId === grupoId && i.alta <= fecha && (!i.baja || fecha < i.baja)) seen.add(i.alumnoId); });
+  return [...seen].map((id) => byId(db.alumnos, id)).filter(Boolean).sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+}
+function gruposDeFranja(franja) { return db.grupos.filter((g) => g.franja === franja && g.activo); }
+
+/* ---------- persistencia (navegador) ---------- */
+const LS_KEY = 'control_clases_datos_v1';
+const dataJSON = () => JSON.stringify(db);
+
+'use strict';
+/* ===== CALCULOS (sin DOM) ===== */
+
+/* Importe por alumno de un grupo en un parte. filas: [{cobrar:boolean}] */
+function calcImportes(tipo, duracion, filas) {
+  const a = db.ajustes;
+  if (tipo === 'AMPA') return filas.map((f) => (f.cobrar ? round2(a.precioAlumnoAmpa * duracion) : 0));
+  const n = filas.filter((f) => f.cobrar).length;
+  const precio = n === 1 ? a.privIndividual : a.privGrupo;
+  return filas.map((f) => (f.cobrar ? round2(precio * duracion) : 0));
+}
+function cobrarPorDefecto(tipo, estado) { return tipo === 'AMPA' ? true : estado !== 'aviso'; }
+
+/* Un parte guardado: { id, fecha, duracion, ampa:boolean, tarifaAmpa, trimestreForzado?, clases:[{grupoId,tipo,franja}], asist:[{alumnoId,grupoId,estado,noCobrar,importe}] } */
+function horasAmpa(p) { return p.ampa ? p.duracion : 0; }
+function importeAmpa(p) { return p.ampa ? round2(p.tarifaAmpa * p.duracion) : 0; }
+
+function partesOrdenados() {
+  return db.partes.slice().sort((a, b) => (a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : b.id - a.id));
+}
+function parteDuplicado(fecha, grupoId, exceptoId) {
+  return db.partes.find((p) => p.id !== exceptoId && p.fecha === fecha && p.clases.some((c) => c.grupoId === grupoId)) || null;
+}
+
+/* ---------- Cuentas con el AMPA ---------- */
+function cuentaAmpa() {
+  let horas = 0, total = 0;
+  db.partes.forEach((p) => { horas += horasAmpa(p); total += importeAmpa(p); });
+  const pagadoYo = db.pagosAmpa.filter((x) => x.pagadoA === 'Yo').reduce((s, x) => s + x.importe, 0);
+  const ingresos = db.ingresos.filter((x) => x.pagador === 'AMPA').reduce((s, x) => s + x.importe, 0);
+  return { horas, total: round2(total), pagadoYo: round2(pagadoYo), ingresos: round2(ingresos), pendiente: round2(total - pagadoYo - ingresos) };
+}
+
+/* ---------- Clases privadas por alumno ---------- */
+function cuentasPrivados() {
+  const porAlumno = new Map();
+  db.partes.forEach((p) => p.asist.forEach((a) => {
+    const g = grupoById(a.grupoId);
+    if (!g || g.tipo !== 'Privado') return;
+    if (!porAlumno.has(a.alumnoId)) porAlumno.set(a.alumnoId, []);
+    porAlumno.get(a.alumnoId).push({ fecha: p.fecha, importe: a.importe, id: p.id, grupoId: a.grupoId, estado: a.estado });
+  }));
+  db.ingresos.forEach((i) => { if (i.pagador !== 'AMPA' && !porAlumno.has(i.pagador)) porAlumno.set(i.pagador, []); });
+  const res = [];
+  porAlumno.forEach((clases, alumnoId) => {
+    const cobrables = clases.filter((c) => c.importe > 0).sort((a, b) => (a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : a.id - b.id));
+    const total = round2(cobrables.reduce((s, c) => s + c.importe, 0));
+    const ingresos = round2(db.ingresos.filter((i) => i.pagador === alumnoId).reduce((s, i) => s + i.importe, 0));
+    let acum = 0, pagadas = 0;
+    const detalle = cobrables.map((c) => { acum += c.importe; const pagada = acum <= ingresos + 0.001; if (pagada) pagadas++; return { fecha: c.fecha, concepto: grupoNombre(c.grupoId) + (c.estado === 'asistio' ? '' : ' (falta ' + (c.estado === 'aviso' ? 'con aviso' : 'sin aviso') + ')'), importe: c.importe, pagada }; });
+    res.push({ alumnoId, nombre: alumnoNombre(alumnoId), clases: cobrables.length, pagadas, pendientes: cobrables.length - pagadas, total, ingresos, pendiente: round2(total - ingresos), detalle });
+  });
+  return res.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+}
+
+/* ---------- Tabla de deudas por pagador (AMPA + alumnos de privadas) ---------- */
+function deudasPagadores() {
+  const a = cuentaAmpa();
+  const pagado = a.pagadoYo + a.ingresos;
+  const cl = db.partes.filter((p) => p.ampa && importeAmpa(p) > 0).sort((x, y) => (x.fecha < y.fecha ? -1 : x.fecha > y.fecha ? 1 : x.id - y.id));
+  let acum = 0, pagadas = 0;
+  const detalle = cl.map((p) => { acum += importeAmpa(p); const pagada = acum <= pagado + 0.001; if (pagada) pagadas++; return { fecha: p.fecha, concepto: p.clases.filter((c) => c.tipo === 'AMPA').map((c) => grupoNombre(c.grupoId)).join(' + ') + ' · ' + String(p.duracion).replace('.', ',') + ' h', importe: importeAmpa(p), pagada }; });
+  const filaAmpa = { esAmpa: true, nombre: 'AMPA', clases: cl.length, pagadas, pendientes: cl.length - pagadas, total: a.total, ingresos: round2(pagado), pendiente: a.pendiente, detalle };
+  return [filaAmpa, ...cuentasPrivados()];
+}
+
+/* ---------- Cobros de alumnos del AMPA por trimestre ---------- */
+function cobrosAmpa(trimId) {
+  const t = byId(db.trimestres, trimId);
+  if (!t) return [];
+  const claves = new Map();
+  const add = (alumnoId, grupoId) => { const k = alumnoId + '|' + grupoId; if (!claves.has(k)) claves.set(k, { alumnoId, grupoId }); };
+  db.inscripciones.forEach((i) => {
+    const g = grupoById(i.grupoId);
+    if (g && g.tipo === 'AMPA' && i.alta <= t.fin && (!i.baja || i.baja > t.inicio)) add(i.alumnoId, i.grupoId);
+  });
+  db.partes.forEach((p) => { if (parteTrimId(p) === trimId) p.asist.forEach((a) => { const g = grupoById(a.grupoId); if (g && g.tipo === 'AMPA') add(a.alumnoId, a.grupoId); }); });
+  const filas = [...claves.values()].map((k) => {
+    let clases = 0, importe = 0;
+    db.partes.forEach((p) => { if (parteTrimId(p) !== trimId) return; p.asist.forEach((a) => { if (a.alumnoId === k.alumnoId && a.grupoId === k.grupoId && a.importe > 0) { clases++; importe += a.importe; } }); });
+    /* Clases anteriores a su alta dentro del trimestre: se cobran salvo exención expresa */
+    const altas = db.inscripciones.filter((i) => i.alumnoId === k.alumnoId && i.grupoId === k.grupoId && i.alta <= t.fin && (!i.baja || i.baja > t.inicio)).map((i) => i.alta);
+    const alta = altas.length ? altas.sort()[0] : null;
+    let previas = 0, previasImporte = 0;
+    if (alta && alta > t.inicio) {
+      db.partes.forEach((p) => {
+        if (parteTrimId(p) !== trimId || p.fecha >= alta || p.fecha < t.inicio) return;
+        if (!p.clases.some((c) => c.grupoId === k.grupoId)) return;
+        if (p.asist.some((a) => a.alumnoId === k.alumnoId && a.grupoId === k.grupoId)) return;
+        previas++; previasImporte += round2(db.ajustes.precioAlumnoAmpa * p.duracion);
+      });
+    }
+    const exenta = db.exencionesPrevias.some((x) => x.trimestreId === trimId && x.alumnoId === k.alumnoId && x.grupoId === k.grupoId);
+    if (!exenta) { clases += previas; importe += previasImporte; }
+    importe = round2(importe);
+    const pago = db.pagosAmpa.find((x) => x.trimestreId === trimId && x.alumnoId === k.alumnoId && x.grupoId === k.grupoId) || null;
+    return { alumnoId: k.alumnoId, grupoId: k.grupoId, alumno: alumnoNombre(k.alumnoId), grupo: grupoNombre(k.grupoId), clases, importe, pago, pendiente: pago ? 0 : importe, previas, exenta };
+  });
+  return filas.sort((a, b) => a.grupo.localeCompare(b.grupo, 'es') || a.alumno.localeCompare(b.alumno, 'es'));
+}
+
+/* ---------- Matriz de asistencia ---------- */
+function asistenciaMatriz(f) {
+  const gruposF = db.grupos.filter((g) => (!f.asigId || g.asigId === f.asigId) && (!f.cursoId || g.cursoId === f.cursoId) && (!f.tipo || g.tipo === f.tipo));
+  const ids = new Set(gruposF.map((g) => g.id));
+  const trim = f.trimId ? byId(db.trimestres, f.trimId) : null;
+  const claseSet = new Set(), asist = new Map(), fechas = new Set(), alumnosPorGrupo = new Map();
+  const addAl = (gid, aid) => { if (!alumnosPorGrupo.has(gid)) alumnosPorGrupo.set(gid, new Set()); alumnosPorGrupo.get(gid).add(aid); };
+  db.partes.forEach((p) => {
+    if (f.trimId && parteTrimId(p) !== f.trimId) return;
+    p.clases.forEach((c) => { if (ids.has(c.grupoId)) { claseSet.add(c.grupoId + '|' + p.fecha); fechas.add(p.fecha); } });
+    p.asist.forEach((a) => { if (ids.has(a.grupoId)) { asist.set(a.alumnoId + '|' + a.grupoId + '|' + p.fecha, a); addAl(a.grupoId, a.alumnoId); } });
+  });
+  db.inscripciones.forEach((i) => {
+    if (!ids.has(i.grupoId)) return;
+    if (!trim || (i.alta <= trim.fin && (!i.baja || i.baja > trim.inicio))) addAl(i.grupoId, i.alumnoId);
+  });
+  const cols = [...fechas].sort();
+  const grupos = [];
+  gruposF.forEach((g) => {
+    const als = [...(alumnosPorGrupo.get(g.id) || [])].map((id) => byId(db.alumnos, id)).filter(Boolean).sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+    const clases = {};
+    cols.forEach((d) => { if (claseSet.has(g.id + '|' + d)) clases[d] = true; });
+    if (!als.length && !Object.keys(clases).length) return;
+    const filas = als.map((al) => {
+      let nA = 0, nAv = 0, nS = 0;
+      const celdas = cols.map((d) => {
+        if (!clases[d]) return { vacio: true };
+        const a = asist.get(al.id + '|' + g.id + '|' + d);
+        if (!a) return { gris: true };
+        if (a.estado === 'asistio') nA++; else if (a.estado === 'aviso') nAv++; else nS++;
+        return { sim: SIMB[a.estado], estado: a.estado, noCobrar: !!a.noCobrar || a.importe === 0 };
+      });
+      return { alumno: al, celdas, nA, nAv, nS };
+    });
+    grupos.push({ grupo: g, nombre: grupoNombre(g), clases, filas });
+  });
+  grupos.sort((a, b) => cursoOrden(a.grupo.cursoId) - cursoOrden(b.grupo.cursoId) || a.nombre.localeCompare(b.nombre, 'es'));
+  return { fechas: cols, grupos };
+}
+function cursoOrden(id) { return (byId(db.cursos, id) || { orden: 99 }).orden; }
+
+'use strict';
+/* ===== INTERFAZ: utilidades DOM, dialogos, autocompletado ===== */
+const VIEWS = {};
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const k in (attrs || {})) {
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k === 'class') el.className = v;
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+    else if (k === 'value') el.value = v;
+    else if (k === 'checked') el.checked = !!v;
+    else if (k === 'disabled') el.disabled = !!v;
+    else el.setAttribute(k, v === true ? '' : v);
+  }
+  kids.flat(9).forEach((c) => { if (c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(String(c))); });
+  return el;
+}
+const $ = (sel, root) => (root || document).querySelector(sel);
+function vaciar(el) { while (el.firstChild) el.removeChild(el.firstChild); return el; }
+
+function toast(msg, tipo) {
+  const t = h('div', { class: 'toast ' + (tipo || '') }, msg);
+  document.body.append(t);
+  setTimeout(() => t.remove(), tipo === 'err' ? 5000 : 2800);
+}
+
+/* dialogo modal: devuelve promesa con el valor del boton pulsado */
+function dialogo(titulo, cuerpo, botones) {
+  return new Promise((resolve) => {
+    const bg = h('div', { class: 'modal-bg' });
+    const cerrar = (v) => { bg.remove(); document.removeEventListener('keydown', onkey); resolve(v); };
+    const onkey = (e) => { if (e.key === 'Escape') cerrar(null); };
+    document.addEventListener('keydown', onkey);
+    const btns = h('div', { class: 'btns' }, (botones || [{ txt: 'Aceptar', val: true, cls: 'primary' }]).map((b) =>
+      h('button', { class: 'btn ' + (b.cls || ''), onclick: () => cerrar(typeof b.val === 'function' ? b.val() : b.val) }, b.txt)));
+    bg.append(h('div', { class: 'modal' }, h('h3', null, titulo), typeof cuerpo === 'string' ? h('div', null, cuerpo) : cuerpo, btns));
+    document.body.append(bg);
+    const first = bg.querySelector('input,select'); if (first) first.focus(); else btns.lastChild.focus();
+  });
+}
+const confirmar = (titulo, texto, txtOk, peligro) => dialogo(titulo, texto, [{ txt: 'Cancelar', val: false }, { txt: txtOk || 'Aceptar', val: true, cls: peligro ? 'danger' : 'primary' }]);
+const avisar = (titulo, texto) => dialogo(titulo, texto, [{ txt: 'Entendido', val: true, cls: 'primary' }]);
+
+/* combo con autocompletado (sin tildes). items: () => [{id,label}] */
+function combo(opt) {
+  const input = h('input', { type: 'text', placeholder: opt.placeholder || '', autocomplete: 'off', style: opt.width ? 'width:' + opt.width : '' });
+  const list = h('div', { class: 'list', style: 'display:none' });
+  const box = h('div', { class: 'combo' }, input, list);
+  let sel = null, hi = -1, shown = [];
+  const abrir = () => {
+    const q = norm(input.value);
+    shown = opt.items().filter((i) => !q || norm(i.label).includes(q)).slice(0, 60);
+    vaciar(list);
+    shown.forEach((i, ix) => list.append(h('div', { class: ix === hi ? 'hi' : '', onmousedown: (e) => { e.preventDefault(); elegir(i); } }, i.label)));
+    if (!shown.length) list.append(h('div', { class: 'muted' }, 'Sin coincidencias'));
+    list.style.display = '';
+  };
+  const cerrar = () => { list.style.display = 'none'; hi = -1; };
+  const elegir = (i) => { sel = i; input.value = i.label; cerrar(); if (opt.onSelect) opt.onSelect(i); };
+  input.addEventListener('input', () => { sel = null; hi = -1; abrir(); if (opt.onInput) opt.onInput(input.value); });
+  input.addEventListener('focus', abrir);
+  input.addEventListener('blur', () => { setTimeout(cerrar, 120); const exact = opt.items().find((i) => norm(i.label) === norm(input.value)); if (exact && !sel) elegir(exact); });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { hi = Math.min(shown.length - 1, hi + 1); abrir(); e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { hi = Math.max(0, hi - 1); abrir(); e.preventDefault(); }
+    else if (e.key === 'Enter') { if (shown[Math.max(hi, 0)] && list.style.display !== 'none') { elegir(shown[Math.max(hi, 0)]); e.preventDefault(); } }
+    else if (e.key === 'Escape') cerrar();
+  });
+  box.get = () => sel || opt.items().find((i) => norm(i.label) === norm(input.value)) || null;
+  box.text = () => input.value;
+  box.set = (i) => { sel = i; input.value = i ? i.label : ''; };
+  box.clear = () => box.set(null);
+  box.input = input;
+  return box;
+}
+function checkbox(texto, checked, onchange) {
+  const i = h('input', { type: 'checkbox', checked, onchange: () => onchange(i.checked) });
+  return h('label', { class: 'chk' }, i, texto);
+}
+function seg(opts, valor, onchange) {
+  const wrap = h('div', { class: 'seg' });
+  opts.forEach((o) => wrap.append(h('button', { type: 'button', class: (o.val === valor ? 'on ' : '') + (o.cls || ''), onclick: () => onchange(o.val) }, o.txt)));
+  return wrap;
+}
+const optsSel = (items, valor, vacio) => [vacio != null ? h('option', { value: '' }, vacio) : null, ...items.map((i) => h('option', { value: i.id, selected: String(i.id) === String(valor) }, i.label))];
+function selector(items, valor, onchange, vacio) {
+  const s = h('select', { onchange: () => onchange(s.value === '' ? '' : (isNaN(s.value) ? s.value : Number(s.value))) }, optsSel(items, valor, vacio));
+  return s;
+}
+const chipTipo = (t) => h('span', { class: 'chip ' + (t === 'Privado' ? 'priv' : '') }, t);
+function descargar(nombre, blobOrText, tipo) {
+  const blob = blobOrText instanceof Blob ? blobOrText : new Blob([blobOrText], { type: tipo || 'application/json' });
+  const a = h('a', { href: URL.createObjectURL(blob), download: nombre });
+  document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+'use strict';
+/* ===== PERSISTENCIA: archivo en el PC (Chrome) + copia en el navegador ===== */
+const FS = { handle: null, estado: 'nuevo', ultimo: null, error: '', pendiente: false };
+const fsOK = () => typeof window.showSaveFilePicker === 'function';
+
+function idb() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('control_clases', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+async function idbGet(k) { try { const d = await idb(); return await new Promise((res) => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(null); }); } catch (e) { return null; } }
+async function idbSet(k, v) { try { const d = await idb(); await new Promise((res) => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = res; }); } catch (e) { /* sin IndexedDB */ } }
+
+let _t = null, _writing = Promise.resolve();
+_saveHook = () => { FS.pendiente = true; if (driveOK()) lsSet('cc_dirty', '1'); pintarEstado(); clearTimeout(_t); _t = setTimeout(guardarAhora, 500); };
+
+async function guardarAhora() {
+  const txt = dataJSON();
+  try { localStorage.setItem(LS_KEY, txt); } catch (e) { /* lleno o bloqueado */ }
+  if (FS.handle && FS.estado === 'archivo') {
+    _writing = _writing.then(async () => {
+      try {
+        const w = await FS.handle.createWritable(); await w.write(txt); await w.close();
+        FS.ultimo = new Date(); FS.error = '';
+      } catch (e) { FS.error = String(e && e.message || e); FS.estado = 'permiso'; }
+    });
+    await _writing;
+  }
+  if (driveOK()) { _writing = _writing.then(() => driveGuardar(txt)); await _writing; }
+  FS.pendiente = false; pintarEstado();
+}
+async function leerHandle(handle) { const f = await handle.getFile(); return await f.text(); }
+
+async function conectarArchivo(handle, esNuevo) {
+  FS.handle = handle; await idbSet('handle', handle);
+  if (!esNuevo) {
+    const txt = await leerHandle(handle);
+    if (txt.trim()) {
+      let obj; try { obj = JSON.parse(txt); setData(obj); } catch (e) { toast('Ese archivo no es válido: ' + e.message, 'err'); FS.handle = null; return false; }
+    }
+  }
+  FS.estado = 'archivo'; await guardarAhora(); pintarEstado(); return true;
+}
+async function elegirArchivo() {
+  if (!fsOK()) { await avisar('Navegador no compatible', 'El guardado automático en archivo necesita Chrome o Edge. Puedes usar «Descargar copia» y «Abrir copia».'); return; }
+  const op = await dialogo('Archivo de datos', 'Tus datos se guardarán solos en un archivo de tu ordenador (.json). ¿Qué quieres hacer?', [
+    { txt: 'Cancelar', val: null }, { txt: 'Abrir uno existente', val: 'abrir' }, { txt: 'Crear uno nuevo', val: 'nuevo', cls: 'primary' }]);
+  try {
+    if (op === 'nuevo') {
+      const h_ = await window.showSaveFilePicker({ suggestedName: 'control_clases_datos.json', types: [{ description: 'Datos', accept: { 'application/json': ['.json'] } }] });
+      await conectarArchivo(h_, true); toast('Archivo creado. Se guarda solo.', 'ok');
+    } else if (op === 'abrir') {
+      const [h_] = await window.showOpenFilePicker({ types: [{ description: 'Datos', accept: { 'application/json': ['.json'] } }] });
+      if (db.partes.length || db.alumnos.length) { if (!(await confirmar('Cargar datos', 'Se cargarán los datos de ese archivo y se descartarán los que hay ahora en el navegador. ¿Continuar?', 'Cargar'))) return; }
+      if (await conectarArchivo(h_, false)) { render(); toast('Datos cargados.', 'ok'); }
+    }
+  } catch (e) { if (e.name !== 'AbortError') toast('No se pudo: ' + e.message, 'err'); }
+}
+async function reconectar() {
+  try {
+    const p = await FS.handle.requestPermission({ mode: 'readwrite' });
+    if (p !== 'granted') { toast('Permiso no concedido.', 'err'); return; }
+    const txt = await leerHandle(FS.handle);
+    if (txt.trim()) setData(JSON.parse(txt));
+    FS.estado = 'archivo'; await guardarAhora(); render(); toast('Archivo conectado.', 'ok');
+  } catch (e) { toast('No se pudo reconectar: ' + e.message, 'err'); }
+}
+async function iniciarPersistencia() {
+  try { const t = localStorage.getItem(LS_KEY); if (t) setData(JSON.parse(t)); } catch (e) { /* ignorar */ }
+  if (driveOK()) { await driveArrancar(); pintarEstado(); return; }
+  const hd = await idbGet('handle');
+  if (hd && fsOK()) {
+    FS.handle = hd;
+    try {
+      const p = await hd.queryPermission({ mode: 'readwrite' });
+      if (p === 'granted') { const txt = await leerHandle(hd); if (txt.trim()) setData(JSON.parse(txt)); FS.estado = 'archivo'; await guardarAhora(); }
+      else FS.estado = 'permiso';
+    } catch (e) { FS.estado = 'permiso'; }
+  } else FS.estado = 'nuevo';
+  pintarEstado();
+}
+function copiaManual() { descargar(`control_clases_copia_${todayISO()}.json`, dataJSON()); }
+function abrirCopia() {
+  const inp = h('input', { type: 'file', accept: '.json,application/json', style: 'display:none' });
+  inp.onchange = async () => {
+    const f = inp.files[0]; if (!f) return;
+    try {
+      const obj = JSON.parse(await f.text());
+      if (!(await confirmar('Abrir copia', 'Se sustituirán TODOS los datos actuales por los de la copia. ¿Continuar?', 'Sustituir', true))) return;
+      setData(obj); commit(); render(); toast('Copia cargada.', 'ok');
+    } catch (e) { toast('Archivo no válido: ' + e.message, 'err'); }
+  };
+  document.body.append(inp); inp.click(); setTimeout(() => inp.remove(), 60000);
+}
+function pintarEstado() {
+  const box = $('#estado'), ban = $('#banner'); if (!box) return;
+  vaciar(box); vaciar(ban);
+  let pill;
+  if (driveOK()) {
+    const e = DRV.estado, hora = DRV.ultimo ? DRV.ultimo.toTimeString().slice(0, 5) : '';
+    if (e === 'ok') pill = h('span', { class: 'pill ok', title: 'Guardado en tu Google Drive', onclick: menuDatos }, FS.pendiente ? '⏳ Guardando…' : '☁ Drive guardado ' + hora);
+    else pill = h('span', { class: 'pill warn', onclick: e === 'conflicto' ? driveConflicto : driveConectar }, e === 'caducado' ? '⚠ Reconectar Drive' : e === 'conflicto' ? '⚠ Conflicto en Drive' : e === 'error' ? '⚠ Error al guardar en Drive' : '⚠ Sin conectar a Drive');
+    box.append(pill, h('button', { class: 'btn sm', onclick: menuDatos }, 'Datos'));
+    if (e === 'caducado') ban.append(h('div', { class: 'banner' }, 'Hay que volver a entrar con tu cuenta de Google para guardar en Drive. Tus cambios están a salvo en este navegador.', h('button', { class: 'btn primary sm', onclick: driveConectar }, 'Conectar con Google')));
+    else if (e === 'nuevo') ban.append(h('div', { class: 'banner' }, 'Conecta con tu Google Drive para guardar los datos y abrirlos desde otros dispositivos.', h('button', { class: 'btn primary sm', onclick: driveConectar }, 'Conectar con Google Drive')));
+    else if (e === 'error') ban.append(h('div', { class: 'banner' }, 'No se pudo guardar en Drive (' + DRV.error + '). Se reintentará con el siguiente cambio.', h('button', { class: 'btn primary sm', onclick: () => guardarAhora() }, 'Reintentar')));
+    return;
+  }
+  if (FS.estado === 'archivo') pill = h('span', { class: 'pill ok', title: 'Guardado en tu archivo de datos', onclick: menuDatos }, FS.pendiente ? '⏳ Guardando…' : '💾 Guardado ' + (FS.ultimo ? FS.ultimo.toTimeString().slice(0, 5) : ''));
+  else pill = h('span', { class: 'pill warn', onclick: FS.estado === 'permiso' ? reconectar : elegirArchivo }, FS.estado === 'permiso' ? '⚠ Reconectar archivo' : '⚠ Solo en este navegador');
+  box.append(pill, h('button', { class: 'btn sm', onclick: menuDatos }, 'Datos'));
+  if (FS.estado === 'permiso') ban.append(h('div', { class: 'banner' }, 'Chrome necesita que vuelvas a dar permiso para guardar en tu archivo de datos.', h('button', { class: 'btn primary sm', onclick: reconectar }, 'Permitir')));
+  else if (FS.estado === 'nuevo') ban.append(h('div', { class: 'banner' }, 'Tus datos solo se guardan dentro de este navegador. Elige un archivo para guardarlos en tu ordenador.', h('button', { class: 'btn primary sm', onclick: elegirArchivo }, 'Elegir archivo de datos')));
+}
+async function menuDatos() {
+  const mk = (txt, fn) => h('button', { class: 'btn', style: 'display:block;width:100%;margin-bottom:8px', onclick: () => { document.querySelector('.modal-bg').remove(); fn(); } }, txt);
+  dialogo('Datos y copias de seguridad', h('div', null,
+    ...(driveOK() ? [mk(DRV.estado === 'ok' ? 'Volver a conectar con Drive…' : 'Conectar con Google Drive…', driveConectar)] : [mk('Elegir o cambiar archivo de datos…', elegirArchivo)]),
+    ...(/^https?:$/.test(location.protocol) ? [mk('ID de cliente de Google…', driveConfigurarId)] : []),
+    mk('Descargar copia de seguridad (.json)', copiaManual),
+    mk('Abrir una copia de seguridad…', abrirCopia), mk('Exportar a Excel…', () => exportarExcel()),
+    h('p', { class: 'small muted' }, driveOK() ? (DRV.estado === 'ok' ? 'Guardado automático activo en tu Google Drive.' : 'Drive no está conectado.') : FS.estado === 'archivo' ? 'Guardado automático activo en tu archivo.' : 'Aún no hay archivo de datos elegido.')),
+    [{ txt: 'Cerrar', val: null }]);
+}
+window.addEventListener('beforeunload', (e) => { if (FS.pendiente) { e.preventDefault(); e.returnValue = ''; } });
+
+'use strict';
+/* ===== GUARDADO EN GOOGLE DRIVE (solo cuando la app se abre desde una dirección web https) ===== */
+const DRIVE_CLIENT_ID = '';
+const DRIVE_FILE = 'control_clases_datos.json';
+const DRV = { token: null, exp: 0, fileId: null, modified: null, estado: 'nuevo', error: '', ultimo: null, ocupado: false };
+const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { /* ignorar */ } };
+const driveClientId = () => lsGet('cc_client_id') || DRIVE_CLIENT_ID;
+const driveOK = () => /^https?:$/.test(location.protocol) && !!driveClientId();
+
+function cargarGIS() {
+  return new Promise((res, rej) => {
+    if (window.google && google.accounts && google.accounts.oauth2) return res();
+    const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client';
+    s.onload = () => res(); s.onerror = () => rej(new Error('No se pudo cargar el inicio de sesión de Google (¿sin internet?).'));
+    document.head.append(s);
+  });
+}
+/* silencioso=true: no abre ventana; falla si hace falta que pulses algo */
+async function pedirToken(silencioso) {
+  await cargarGIS();
+  return new Promise((res, rej) => {
+    const tc = google.accounts.oauth2.initTokenClient({
+      client_id: driveClientId(), scope: 'https://www.googleapis.com/auth/drive.file',
+      callback: (r) => { if (r.error) rej(new Error(r.error)); else { DRV.token = r.access_token; DRV.exp = Date.now() + (Number(r.expires_in || 3600) - 60) * 1000; res(); } },
+      error_callback: (e) => rej(new Error((e && e.type) || 'cancelado')),
+    });
+    tc.requestAccessToken({ prompt: silencioso ? 'none' : '' });
+  });
+}
+async function dfetch(url, opts) {
+  opts = opts || {};
+  if (!DRV.token || Date.now() > DRV.exp) { try { await pedirToken(true); } catch (e) { throw new Error('sesion'); } }
+  const r = await fetch(url, Object.assign({}, opts, { headers: Object.assign({ Authorization: 'Bearer ' + DRV.token }, opts.headers || {}) }));
+  if (r.status === 401) { DRV.token = null; throw new Error('sesion'); }
+  if (!r.ok) throw new Error('Drive ' + r.status + ': ' + (await r.text()).slice(0, 160));
+  return r;
+}
+const API = 'https://www.googleapis.com/drive/v3/files', UP = 'https://www.googleapis.com/upload/drive/v3/files';
+async function driveBuscar() {
+  const q = encodeURIComponent(`name='${DRIVE_FILE}' and trashed=false`);
+  const j = await (await dfetch(`${API}?q=${q}&orderBy=modifiedTime%20desc&fields=files(id,modifiedTime)&spaces=drive`)).json();
+  return (j.files && j.files[0]) || null;
+}
+async function driveCrear(txt) {
+  const b = 'ccbound' + Date.now();
+  const body = `--${b}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify({ name: DRIVE_FILE, mimeType: 'application/json' })}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${txt}\r\n--${b}--`;
+  return (await dfetch(`${UP}?uploadType=multipart&fields=id,modifiedTime`, { method: 'POST', headers: { 'Content-Type': 'multipart/related; boundary=' + b }, body })).json();
+}
+const driveLeer = async (id) => (await dfetch(`${API}/${id}?alt=media`)).text();
+const driveMeta = async (id) => (await dfetch(`${API}/${id}?fields=modifiedTime`)).json();
+const driveEscribir = async (id, txt) => (await (await dfetch(`${UP}/${id}?uploadType=media&fields=modifiedTime`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: txt })).json());
+
+function driveFalloSesion(e) {
+  if (e.message === 'sesion') { DRV.estado = 'caducado'; DRV.error = ''; }
+  else { DRV.estado = 'error'; DRV.error = e.message; }
+}
+/* Guarda el JSON en Drive. Llamado desde guardarAhora. */
+async function driveGuardar(txt) {
+  if (!DRV.fileId || ['nuevo', 'caducado', 'conflicto'].includes(DRV.estado)) return;
+  try {
+    const m = await driveMeta(DRV.fileId);
+    if (DRV.modified && m.modifiedTime !== DRV.modified) { DRV.estado = 'conflicto'; pintarEstado(); return driveConflicto(); }
+    const r = await driveEscribir(DRV.fileId, txt);
+    DRV.modified = r.modifiedTime; DRV.estado = 'ok'; DRV.error = ''; DRV.ultimo = new Date(); lsSet('cc_dirty', null);
+  } catch (e) { driveFalloSesion(e); }
+}
+async function driveConflicto() {
+  if (DRV.ocupado) return; DRV.ocupado = true;
+  try {
+    const op = await dialogo('El archivo de Drive ha cambiado', 'Desde que lo abriste, el archivo de Drive se ha modificado (por ejemplo desde otro dispositivo). Elige qué versión te quedas:', [
+      { txt: 'Quedarme con la de Drive', val: 'drive' }, { txt: 'Sobrescribir Drive con la mía', val: 'mia', cls: 'primary' }, { txt: 'Descargar la mía y decidir luego', val: 'copia' }]);
+    if (op === 'copia') { copiaManual(); return; }
+    const m = await driveMeta(DRV.fileId);
+    if (op === 'drive') { setData(JSON.parse(await driveLeer(DRV.fileId))); try { localStorage.setItem(LS_KEY, dataJSON()); } catch (e) { /* */ } DRV.modified = m.modifiedTime; DRV.estado = 'ok'; lsSet('cc_dirty', null); render(); toast('Cargada la versión de Drive.', 'ok'); }
+    else if (op === 'mia') { DRV.modified = m.modifiedTime; DRV.estado = 'ok'; await driveGuardar(dataJSON()); toast('Drive actualizado con tus datos.', 'ok'); }
+  } catch (e) { driveFalloSesion(e); toast('No se pudo: ' + e.message, 'err'); }
+  finally { DRV.ocupado = false; pintarEstado(); }
+}
+/* Botón «Conectar con Google Drive» / «Reconectar» (hay gesto del usuario) */
+async function driveConectar() {
+  try {
+    await pedirToken(false);
+    if (lsGet('cc_drive_on') === '1') { await driveEntrar(); render(); pintarEstado(); return; }
+    const f = await driveBuscar();
+    const hayLocal = db.partes.length || db.alumnos.length;
+    if (f) {
+      if (hayLocal && !(await confirmar('Datos en Drive', 'En tu Drive ya hay un archivo de datos. Se cargará y se descartará lo que hay ahora en este navegador. ¿Continuar?', 'Cargar de Drive'))) { DRV.estado = DRV.fileId ? 'ok' : 'nuevo'; pintarEstado(); return; }
+      setData(JSON.parse(await driveLeer(f.id))); DRV.fileId = f.id; DRV.modified = (await driveMeta(f.id)).modifiedTime;
+      try { localStorage.setItem(LS_KEY, dataJSON()); } catch (e) { /* */ }
+      render(); toast('Datos cargados desde Drive.', 'ok');
+    } else {
+      const c = await driveCrear(dataJSON()); DRV.fileId = c.id; DRV.modified = c.modifiedTime; toast('Archivo creado en tu Drive. Se guarda solo.', 'ok');
+    }
+    lsSet('cc_drive_on', '1'); lsSet('cc_dirty', null); DRV.estado = 'ok'; DRV.ultimo = new Date();
+  } catch (e) { toast('No se pudo conectar con Drive: ' + e.message, 'err'); }
+  pintarEstado();
+}
+/* Ya conectado antes (token nuevo): trae la versión de Drive sin preguntar, salvo que haya cambios sin subir */
+async function driveEntrar() {
+  const f = await driveBuscar();
+  if (!f) { DRV.estado = 'nuevo'; return; }
+  DRV.fileId = f.id;
+  const m = await driveMeta(f.id);
+  if (lsGet('cc_dirty') === '1') { DRV.modified = m.modifiedTime; DRV.estado = 'conflicto'; setTimeout(driveConflicto, 300); return; }
+  setData(JSON.parse(await driveLeer(f.id))); DRV.modified = m.modifiedTime;
+  try { localStorage.setItem(LS_KEY, dataJSON()); } catch (e) { /* */ }
+  DRV.estado = 'ok'; DRV.ultimo = new Date();
+}
+/* Arranque: si ya estuvo conectado, intenta entrar sin molestar; si no, deja el botón. */
+async function driveArrancar() {
+  if (!driveOK()) return;
+  if (lsGet('cc_drive_on') !== '1') { DRV.estado = 'nuevo'; return; }
+  DRV.estado = 'caducado';
+  try { await pedirToken(true); await driveEntrar(); } catch (e) { DRV.estado = 'caducado'; }
+}
+function driveConfigurarId() {
+  const inp = h('input', { type: 'text', value: lsGet('cc_client_id') || '', placeholder: '123456-abc.apps.googleusercontent.com', style: 'width:100%' });
+  dialogo('ID de cliente de Google', h('div', null, h('p', { class: 'small muted' }, 'Solo hace falta si esta versión no lo trae ya incluido.'), inp), [{ txt: 'Cancelar', val: null }, { txt: 'Guardar y recargar', val: () => { lsSet('cc_client_id', inp.value.trim() || null); location.reload(); return true; }, cls: 'primary' }]);
+}
+
+'use strict';
+/* ===== PANTALLA: PARTE DE CLASE ===== */
+const P = { fecha: todayISO(), duracion: 1, sel: [], anuladas: new Set(), filas: new Map(), editId: null, pag: 0, busca: '' };
+let pBloques = null, pCab = null, pLista = null, pGrupos = null;
+
+function pReset(mantenerFecha) {
+  P.sel = []; P.anuladas = new Set(); P.filas = new Map(); P.editId = null; P.duracion = 1;
+  if (!mantenerFecha) P.fecha = todayISO();
+}
+const pKey = (a, g) => a + '|' + g;
+/* Alumno en 2 grupos AMPA del mismo parte: solo se cobra en el primero (se puede cambiar a mano con «Cobrar») */
+function pEsSecundaria(f) {
+  const g = grupoById(f.grupoId); if (!g || g.tipo !== 'AMPA') return false;
+  for (const gid of P.sel) {
+    if (P.anuladas.has(gid)) continue;
+    if (gid === f.grupoId) return false;
+    if (P.filas.has(pKey(f.alumnoId, gid))) return true;
+  }
+  return false;
+}
+const pCobrarEf = (f) => (f.manual ? f.cobrar : f.cobrar && !pEsSecundaria(f));
+function pSincronizar() {
+  // quita filas de grupos no seleccionados y añade los alumnos inscritos en la fecha
+  const gs = new Set(P.sel);
+  [...P.filas.keys()].forEach((k) => { if (!gs.has(Number(k.split('|')[1]))) P.filas.delete(k); });
+  P.sel.forEach((gid) => {
+    const g = grupoById(gid); if (!g || !isoValida(P.fecha)) return;
+    alumnosDeGrupo(gid, P.fecha).forEach((al) => {
+      const k = pKey(al.id, gid);
+      if (!P.filas.has(k)) P.filas.set(k, { alumnoId: al.id, grupoId: gid, estado: 'asistio', cobrar: true, manual: false });
+    });
+  });
+}
+function pFilasDe(gid) {
+  return [...P.filas.values()].filter((f) => f.grupoId === gid).sort((a, b) => alumnoNombre(a.alumnoId).localeCompare(alumnoNombre(b.alumnoId), 'es'));
+}
+function pSeleccionarFranja(gid) {
+  const g = grupoById(gid);
+  P.sel = gruposDeFranja(g.franja).filter((x) => x.tipo === g.tipo).map((x) => x.id);
+  if (!P.sel.includes(gid)) P.sel.push(gid);
+  P.anuladas = new Set(); pSincronizar(); pPintar();
+}
+function pAlternar(gid, on) {
+  const g = grupoById(gid);
+  if (on) {
+    const otro = P.sel.map(grupoById).find((x) => x && x.tipo !== g.tipo);
+    if (otro) { toast('Los grupos AMPA y los privados no se juntan en un mismo parte.', 'err'); pPintar(); return; }
+    if (!P.sel.includes(gid)) P.sel.push(gid);
+  } else { P.sel = P.sel.filter((x) => x !== gid); P.anuladas.delete(gid); }
+  pSincronizar(); pPintar();
+}
+
+/* ---------- guardar ---------- */
+async function pGuardar() {
+  if (!isoValida(P.fecha)) return toast('La fecha no es válida.', 'err');
+  if (!(P.duracion > 0)) return toast('La duración debe ser mayor que 0.', 'err');
+  if (!P.sel.length) return toast('Pincha primero un grupo de la lista.', 'err');
+  const gids = P.sel.filter((g) => !P.anuladas.has(g));
+  if (!gids.length) return toast('Todas las clases están anuladas: no hay nada que guardar.', 'err');
+  for (const gid of gids) {
+    const dup = parteDuplicado(P.fecha, gid, P.editId);
+    if (dup) return avisar('Parte ya guardado', `Ya hay un parte de ${grupoNombre(gid)} el ${fmtFecha(P.fecha)}. Ábrelo en la lista de «Partes guardados» para editarlo o borrarlo.`);
+  }
+  let forzado = null;
+  if (!trimestreDe(P.fecha)) {
+    if (!db.trimestres.length) return toast('Crea un trimestre en Gestión › Ajustes.', 'err');
+    const s = h('select', null, db.trimestres.map((t) => h('option', { value: t.id }, `${t.nombre} (${fmtFecha(t.inicio)} – ${fmtFecha(t.fin)})`)));
+    const r = await dialogo('Fecha fuera de trimestre', h('div', null, h('p', null, `El ${fmtFecha(P.fecha)} no está dentro de ningún trimestre. ¿A cuál lo asigno?`), s),
+      [{ txt: 'Cancelar', val: null }, { txt: 'Asignar y guardar', val: () => Number(s.value), cls: 'primary' }]);
+    if (!r) return; forzado = r;
+  }
+  const viejo = P.editId ? byId(db.partes, P.editId) : null;
+  const parte = { id: P.editId || nextId('parte'), fecha: P.fecha, duracion: P.duracion, ampa: false, tarifaAmpa: viejo && viejo.tarifaAmpa ? viejo.tarifaAmpa : db.ajustes.tarifaAmpa, clases: [], asist: [] };
+  if (forzado) parte.trimestreForzado = forzado; else if (viejo && viejo.trimestreForzado && !trimestreDe(P.fecha)) parte.trimestreForzado = viejo.trimestreForzado;
+  gids.forEach((gid) => {
+    const g = grupoById(gid); const filas = pFilasDe(gid);
+    parte.clases.push({ grupoId: gid, tipo: g.tipo, franja: g.franja });
+    if (g.tipo === 'AMPA') parte.ampa = true;
+    const imps = calcImportes(g.tipo, P.duracion, filas.map((f) => ({ cobrar: pCobrarEf(f) })));
+    filas.forEach((f, i) => parte.asist.push({ alumnoId: f.alumnoId, grupoId: gid, estado: f.estado, noCobrar: !pCobrarEf(f), importe: imps[i] }));
+  });
+  if (P.editId) db.partes[db.partes.findIndex((p) => p.id === P.editId)] = parte; else db.partes.push(parte);
+  commit();
+  const n = parte.asist.length;
+  toast(`Parte guardado: ${parte.clases.length} grupo(s), ${n} alumno(s).`, 'ok');
+  pReset(true); pPintar();
+}
+async function pBorrar() {
+  if (!P.editId) return;
+  if (!(await confirmar('Borrar parte', `¿Borrar el parte del ${fmtFecha(P.fecha)}? Se eliminan sus clases y asistencias.`, 'Borrar', true))) return;
+  db.partes = db.partes.filter((p) => p.id !== P.editId); commit(); toast('Parte borrado.', 'ok'); pReset(true); pPintar();
+}
+function pAbrir(id) {
+  const p = byId(db.partes, id); if (!p) return;
+  pReset(true); P.editId = id; P.fecha = p.fecha; P.duracion = p.duracion; P.sel = p.clases.map((c) => c.grupoId);
+  p.asist.forEach((a) => P.filas.set(pKey(a.alumnoId, a.grupoId), { alumnoId: a.alumnoId, grupoId: a.grupoId, estado: a.estado, cobrar: !a.noCobrar, manual: true }));
+  pSincronizar(); pPintar();
+}
+function pVecino(delta) {
+  const lista = partesOrdenados(); const i = lista.findIndex((p) => p.id === P.editId); const n = lista[i + delta]; if (n) pAbrir(n.id);
+}
+
+/* ---------- pintar ---------- */
+function pPintarCab() {
+  vaciar(pCab);
+  const fi = h('input', { type: 'date', value: P.fecha, onchange: () => { if (isoValida(fi.value)) { P.fecha = fi.value; pSincronizar(); pPintar(); } } });
+  const du = h('input', { type: 'number', step: '0.25', min: '0.25', value: P.duracion, onchange: () => { P.duracion = Number(du.value) || 0; pPintarBloques(); } });
+  pCab.append(...[
+    P.editId ? h('div', { class: 'banner', style: 'margin:-14px -16px 12px;border-radius:10px 10px 0 0' }, `✎ Editando el parte del ${fmtFecha(P.fecha)}`,
+      h('button', { class: 'btn sm', onclick: () => pVecino(1) }, '◀ anterior'), h('button', { class: 'btn sm', onclick: () => pVecino(-1) }, 'siguiente ▶'),
+      h('button', { class: 'btn sm danger', onclick: pBorrar }, 'Borrar este parte'), h('button', { class: 'btn sm', onclick: () => { pReset(true); pPintar(); } }, 'Cancelar edición')) : null,
+    h('div', { class: 'row' },
+      h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Fecha ' + (isoValida(P.fecha) ? '(' + diaSemana(P.fecha) + ')' : '')), fi),
+      h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Duración (h)'), du),
+      h('div', { class: 'grow' }),
+      h('button', { class: 'btn', onclick: () => { pReset(true); pPintar(); } }, 'Limpiar'),
+      h('button', { class: 'btn ok', onclick: pGuardar }, '💾 Guardar parte'))].filter(Boolean));
+}
+function pPintarBloques() {
+  vaciar(pBloques);
+  if (!P.sel.length) { pBloques.append(h('div', { class: 'empty card' }, 'Pincha un grupo de la lista de la izquierda: saldrán sus alumnos y los de los grupos que dan clase a la misma hora.')); return; }
+  const hayAmpa = P.sel.some((g) => !P.anuladas.has(g) && (grupoById(g) || {}).tipo === 'AMPA');
+  if (hayAmpa) pBloques.append(h('div', { class: 'small muted', style: 'margin-bottom:8px' }, `Para el AMPA este parte cuenta como ${P.duracion} hora(s): ${eur(db.ajustes.tarifaAmpa * P.duracion)} (una sola vez aunque haya varios grupos).`));
+  P.sel.forEach((gid) => {
+    const g = grupoById(gid); if (!g) return;
+    const anul = P.anuladas.has(gid), filas = pFilasDe(gid), imps = calcImportes(g.tipo, P.duracion, filas.map((f) => ({ cobrar: pCobrarEf(f) })));
+    const blk = h('div', { class: 'gblock' + (anul ? ' anulada' : '') });
+    blk.append(h('div', { class: 'ghead' + (g.tipo === 'Privado' ? ' priv' : '') }, grupoNombre(g), chipTipo(g.tipo), h('span', { class: 'grow' }),
+      checkbox('Clase anulada', anul, (v) => { if (v) P.anuladas.add(gid); else P.anuladas.delete(gid); pPintarBloques(); })));
+    if (!filas.length) blk.append(h('div', { class: 'empty small' }, 'No hay alumnos inscritos en este grupo en esa fecha. Inscríbelos en Gestión › Inscripciones (con la fecha de alta correcta).'));
+    filas.forEach((f, i) => {
+      const fila = h('div', { class: 'alu' });
+      fila.append(h('div', { class: 'bold' }, alumnoNombre(f.alumnoId)),
+        seg([{ val: 'asistio', txt: '✓ Asistió', cls: 'asistio' }, { val: 'aviso', txt: 'Falta con aviso', cls: 'aviso' }, { val: 'sin', txt: 'Falta sin aviso', cls: 'sin' }], f.estado,
+          (v) => { f.estado = v; if (!f.manual) f.cobrar = cobrarPorDefecto(g.tipo, v); pPintarBloques(); }),
+        h('div', { class: 'row', style: 'gap:10px;align-items:center;flex-wrap:nowrap' }, checkbox('Cobrar', pCobrarEf(f), (v) => { f.cobrar = v; f.manual = true; pPintarBloques(); }), h('span', { class: 'imp' }, eur(imps[i]))));
+      if (!f.manual && pEsSecundaria(f)) fila.append(h('div', { class: 'small muted', style: 'grid-column:1/-1;flex-basis:100%' }, 'Ya cobrado en otro grupo de este parte (misma hora). Marca «Cobrar» para cobrarlo también aquí.'));
+      if (anul) fila.style.pointerEvents = 'none';
+      blk.append(fila);
+    });
+    pBloques.append(blk);
+  });
+}
+function pPintarGrupos() {
+  vaciar(pGrupos);
+  const visibles = db.grupos.filter((g) => g.activo || P.sel.includes(g.id)).sort((a, b) => cursoOrden(a.cursoId) - cursoOrden(b.cursoId) || grupoNombre(a).localeCompare(grupoNombre(b), 'es'));
+  visibles.forEach((g) => {
+    const on = P.sel.includes(g.id), otro = P.sel.length && !on && P.sel.map(grupoById).some((x) => x && x.tipo !== g.tipo);
+    pGrupos.append(h('div', { class: 'item' + (on ? ' sel' : '') + (otro ? ' dis' : ''), title: 'Pincha para seleccionar este grupo y los que comparten su hora' },
+      h('input', { type: 'checkbox', checked: on, onclick: (e) => { e.stopPropagation(); pAlternar(g.id, e.target.checked); } }),
+      h('span', { class: 'grow', onclick: () => { if (!otro) pSeleccionarFranja(g.id); } }, grupoNombre(g)),
+      g.comparte > 0 || gruposDeFranja(g.franja).length > 1 ? h('span', { class: 'small muted', title: 'Comparte hora con otros grupos' }, '⛓') : null));
+  });
+}
+function pPintarLista() {
+  vaciar(pLista);
+  const q = norm(P.busca), todos = partesOrdenados().filter((p) => !q || fmtFecha(p.fecha).includes(q) || norm(p.clases.map((c) => grupoNombre(c.grupoId)).join(' ')).includes(q));
+  const pp = 12, pags = Math.max(1, Math.ceil(todos.length / pp)); if (P.pag >= pags) P.pag = pags - 1;
+  pLista.append(h('h3', null, `Partes guardados (${todos.length})`),
+    h('input', { type: 'search', placeholder: 'Buscar fecha o grupo…', value: P.busca, style: 'width:100%;margin-bottom:8px', oninput: (e) => { P.busca = e.target.value; P.pag = 0; pPintarLista(); const i = $('input[type=search]', pLista); i.focus(); i.setSelectionRange(99, 99); } }));
+  const box = h('div', { class: 'plist' });
+  todos.slice(P.pag * pp, P.pag * pp + pp).forEach((p) => {
+    const faltas = p.asist.filter((a) => a.estado !== 'asistio').length, extra = p.clases.length > 1 ? ` (+${p.clases.length - 1})` : '';
+    box.append(h('div', { class: 'it' + (p.id === P.editId ? ' sel' : ''), onclick: () => pAbrir(p.id) },
+      h('div', { class: 'bold', style: 'min-width:92px' }, fmtFecha(p.fecha), h('div', { class: 'small muted' }, diaSemana(p.fecha))),
+      h('div', { class: 'grow small' }, p.clases.length ? grupoNombre(p.clases[0].grupoId) + extra : '—'),
+      faltas ? h('span', { class: 'chip', style: 'background:var(--warn-soft);color:var(--warn)', title: 'Faltas' }, faltas + ' falta' + (faltas > 1 ? 's' : '')) : null));
+  });
+  if (!todos.length) box.append(h('div', { class: 'empty small' }, 'Aún no hay partes guardados.'));
+  pLista.append(box, h('div', { class: 'row', style: 'justify-content:space-between;margin-top:8px' },
+    h('button', { class: 'btn sm', disabled: P.pag <= 0, onclick: () => { P.pag--; pPintarLista(); } }, '◀ más recientes'),
+    h('span', { class: 'small muted' }, `${P.pag + 1}/${pags}`),
+    h('button', { class: 'btn sm', disabled: P.pag >= pags - 1, onclick: () => { P.pag++; pPintarLista(); } }, 'más antiguos ▶')));
+}
+function pPintar() { pPintarCab(); pPintarGrupos(); pPintarBloques(); pPintarLista(); }
+VIEWS.parte = {
+  render(root) {
+    pCab = h('div', { class: 'card' }); pBloques = h('div'); pGrupos = h('div', { class: 'glist' }); pLista = h('div', { class: 'card lista' });
+    root.append(h('div', { class: 'split' }, h('div', { class: 'card' }, h('h3', null, 'Grupos'), pGrupos), h('div', null, pCab, pBloques), pLista));
+    pSincronizar(); pPintar();
+  },
+};
+
+'use strict';
+/* ===== PANTALLA: ASISTENCIA (consulta) ===== */
+const AS = { trimId: null, asigId: '', cursoId: '', tipo: '' };
+function asIniciar() {
+  if (AS.trimId === null) { const t = trimestreDe(todayISO()) || db.trimestres[0]; AS.trimId = t ? t.id : ''; }
+}
+VIEWS.asistencia = {
+  render(root) {
+    asIniciar();
+    const cuerpo = h('div', { class: 'card', style: 'overflow:auto;max-height:calc(100vh - 230px)' });
+    const pintar = () => {
+      vaciar(cuerpo);
+      const m = asistenciaMatriz(AS);
+      if (!m.fechas.length && !m.grupos.length) { cuerpo.append(h('div', { class: 'empty' }, 'No hay clases ni alumnos con estos filtros.')); return; }
+      if (!m.fechas.length) cuerpo.append(h('div', { class: 'empty small' }, 'Todavía no hay clases guardadas con estos filtros (solo se ven los alumnos inscritos).'));
+      const tb = h('table', { class: 'matrix' });
+      tb.append(h('tr', null, h('th', { class: 'n' }, 'Grupo / alumno'), h('th', { title: 'Asistió / con aviso / sin aviso' }, '✓/A/S'),
+        m.fechas.map((f) => h('th', { class: 'd', title: `${diaSemana(f)} ${fmtFecha(f)}` }, fmtCorta(f)))));
+      m.grupos.forEach((g) => {
+        tb.append(h('tr', { class: 'gh' + (g.grupo.tipo === 'Privado' ? ' priv' : '') }, h('td', { class: 'n' }, g.nombre), h('td'),
+          m.fechas.map((f) => h('td', { title: g.clases[f] ? 'Clase dada: abrir el parte' : '', style: g.clases[f] ? 'cursor:pointer' : '', onclick: g.clases[f] ? () => asAbrir(f, g.grupo.id) : null }, g.clases[f] ? '●' : ''))));
+        g.filas.forEach((fl) => tb.append(h('tr', null, h('td', { class: 'n' }, '   ' + fl.alumno.nombre), h('td', { class: 'small' }, `${fl.nA}/${fl.nAv}/${fl.nS}`),
+          fl.celdas.map((c, i) => {
+            if (c.vacio) return h('td'); if (c.gris) return h('td', { class: 'gr', title: 'No inscrito ese día' });
+            const cls = (c.estado === 'asistio' ? 'ok' : c.estado === 'aviso' ? 'a' : 's') + (c.noCobrar ? ' nc' : '');
+            return h('td', { class: cls, title: ESTADO_TXT[c.estado] + (c.noCobrar ? ' · no se cobra' : ''), style: 'cursor:pointer', onclick: () => asAbrir(m.fechas[i], g.grupo.id) }, c.sim);
+          }))));
+      });
+      cuerpo.append(tb);
+    };
+    const items = (l, k) => l.map((x) => ({ id: x.id, label: x[k] }));
+    const f = (txt, sel) => h('div', { class: 'col' }, h('label', { class: 'lbl' }, txt), sel);
+    const rer = () => pintar();
+    root.append(h('h2', null, 'Asistencia'),
+      h('div', { class: 'card row' },
+        f('Trimestre', selector(items(db.trimestres, 'nombre'), AS.trimId, (v) => { AS.trimId = v; rer(); }, 'Todos')),
+        f('Asignatura', selector(items(db.asignaturas, 'nombre'), AS.asigId, (v) => { AS.asigId = v; rer(); }, 'Todas')),
+        f('Curso', selector(items(db.cursos, 'nombre'), AS.cursoId, (v) => { AS.cursoId = v; rer(); }, 'Todos')),
+        f('Tipo', selector([{ id: 'AMPA', label: 'AMPA' }, { id: 'Privado', label: 'Privado' }], AS.tipo, (v) => { AS.tipo = v; rer(); }, 'Todos')),
+        h('div', { class: 'grow' }),
+        h('div', { class: 'small muted' }, '✓ asistió · A falta con aviso · S falta sin aviso · ', h('span', { style: 'background:#ffc000;padding:0 6px;border-radius:3px' }, 'naranja'), ' no se cobra · ',
+          h('span', { style: 'background:#d9d9d9;padding:0 6px;border-radius:3px' }, 'gris'), ' no inscrito · hueco: ese grupo no tuvo clase · clic en una celda: abrir el parte')),
+      cuerpo);
+    pintar();
+  },
+};
+function asAbrir(fecha, gid) {
+  const p = db.partes.find((x) => x.fecha === fecha && x.clases.some((c) => c.grupoId === gid));
+  if (!p) return; vistaActual = 'parte'; render(); pAbrir(p.id);
+}
+
+'use strict';
+/* ===== PANTALLA: COBROS AMPA (alumnos, por trimestre) ===== */
+const CB = { trimId: null, grupo: '', soloPend: false, vista: 'asig', keep: new Set() };
+const cbKey = (f) => f.alumnoId + '|' + f.grupoId;
+VIEWS.cobros = {
+  render(root) {
+    if (CB.trimId === null || !byId(db.trimestres, CB.trimId)) { const t = trimestreDe(todayISO()) || db.trimestres[0]; CB.trimId = t ? t.id : ''; }
+    const cuerpo = h('div'), kpis = h('div', { class: 'kpis' });
+    const pintar = () => {
+      vaciar(cuerpo); vaciar(kpis);
+      let filas = cobrosAmpa(CB.trimId);
+      const total = filas.reduce((s, f) => s + f.importe, 0), pagado = filas.reduce((s, f) => s + (f.pago ? f.pago.importe : 0), 0), pend = filas.reduce((s, f) => s + f.pendiente, 0);
+      kpis.append(...[['Total del trimestre', eur(total)], ['Pagado', eur(pagado)], ['Pendiente de pago', eur(pend)]].map(([l, v]) => h('div', { class: 'kpi' }, h('div', { class: 'v' }, v), h('div', { class: 'l' }, l))));
+      if (CB.grupo) filas = filas.filter((f) => String(f.grupoId) === String(CB.grupo));
+      if (CB.vista === 'alumno') return pintarAlumnos(filas);
+      if (CB.soloPend) filas = filas.filter((f) => (!f.pago && f.importe > 0) || CB.keep.has(cbKey(f)));
+      if (!filas.length) { cuerpo.append(h('div', { class: 'card empty' }, 'No hay alumnos del AMPA inscritos en este trimestre. Inscríbelos en Gestión › Inscripciones.')); return; }
+      const tb = h('table', { class: 't' }, h('tr', null, ['Alumno', 'Grupo', 'Clases cobradas', 'Clases previas al alta', 'Importe', 'Pagado', 'Pagado a', 'Importe pagado', 'Fecha pago', 'Pendiente'].map((x, i) => h('th', { class: i === 2 || i === 4 || i === 9 ? 'num' : '' }, x))));
+      filas.forEach((f) => {
+        const p = f.pago;
+        const upd = () => { if (CB.soloPend) CB.keep.add(cbKey(f)); commit(); pintar(); };
+        tb.append(h('tr', null,
+          h('td', { class: 'bold' }, f.alumno), h('td', null, f.grupo), h('td', { class: 'num' }, f.clases),
+          h('td', null, f.previas ? checkbox('Cobrar ' + f.previas, !f.exenta, (v) => {
+            db.exencionesPrevias = db.exencionesPrevias.filter((x) => !(x.trimestreId === CB.trimId && x.alumnoId === f.alumnoId && x.grupoId === f.grupoId));
+            if (!v) db.exencionesPrevias.push({ trimestreId: CB.trimId, alumnoId: f.alumnoId, grupoId: f.grupoId });
+            upd();
+          }) : null),
+          h('td', { class: 'num' }, eur(f.importe)),
+          h('td', null, checkbox('', !!p, (v) => {
+            if (v) db.pagosAmpa.push({ trimestreId: CB.trimId, alumnoId: f.alumnoId, grupoId: f.grupoId, pagadoA: 'Yo', importe: f.importe, fecha: todayISO() });
+            else db.pagosAmpa = db.pagosAmpa.filter((x) => x !== p);
+            upd();
+          })),
+          h('td', null, p ? h('select', { onchange: (e) => { p.pagadoA = e.target.value; upd(); } }, ['Yo', 'AMPA'].map((o) => h('option', { value: o, selected: o === p.pagadoA }, o === 'Yo' ? 'Yo (me lo dio a mí)' : 'AMPA (se lo dio al AMPA)'))) : null),
+          h('td', null, p ? h('input', { type: 'number', step: '0.01', value: p.importe, onchange: (e) => { p.importe = Number(e.target.value) || 0; upd(); } }) : null),
+          h('td', null, p ? h('input', { type: 'date', value: p.fecha, onchange: (e) => { if (isoValida(e.target.value)) { p.fecha = e.target.value; upd(); } } }) : null),
+          h('td', { class: 'num ' + (f.pendiente > 0 ? 'neg' : '') }, eur(f.pendiente))));
+      });
+      cuerpo.append(h('div', { class: 'card', style: 'padding:0;overflow:auto' }, tb),
+        h('p', { class: 'small muted' }, '«Clases previas al alta»: si el alumno se apuntó con el trimestre empezado, se le cuentan también las clases que el grupo dio antes (se cobra todo el trimestre). Desmarca «Cobrar» para anularlo en ese alumno. Al marcar «Pagado» el pendiente de ese alumno y grupo queda en 0 en este trimestre, aunque sigas dando más clases. Si lo recibiste tú elige «Yo»: se resta de lo que te debe el AMPA (pestaña Cuentas).'));
+    };
+    const pintarAlumnos = (filas) => {
+      const m = new Map();
+      filas.forEach((f) => {
+        if (!m.has(f.alumnoId)) m.set(f.alumnoId, { alumno: f.alumno, grupos: [], clases: 0, importe: 0, pagado: 0, pendiente: 0 });
+        const r = m.get(f.alumnoId);
+        r.grupos.push(f.grupo); r.clases += f.clases; r.importe += f.importe; r.pagado += f.pago ? f.pago.importe : 0; r.pendiente += f.pendiente;
+      });
+      let rs = [...m.values()].sort((a, b) => a.alumno.localeCompare(b.alumno, 'es'));
+      if (CB.soloPend) rs = rs.filter((r) => r.pendiente > 0.004);
+      if (!rs.length) { cuerpo.append(h('div', { class: 'card empty' }, 'No hay nada que mostrar.')); return; }
+      cuerpo.append(h('div', { class: 'card', style: 'padding:0;overflow:auto' }, h('table', { class: 't' },
+        h('tr', null, ['Alumno', 'Asignaturas', 'Clases cobradas', 'Clases previas al alta', 'Importe', 'Pagado', 'Pendiente'].map((x, i) => h('th', { class: i > 1 ? 'num' : '' }, x))),
+        rs.map((r) => h('tr', null, h('td', { class: 'bold' }, r.alumno), h('td', null, r.grupos.join(' · ')), h('td', { class: 'num' }, r.clases), h('td', { class: 'num' }, eur(r.importe)),
+          h('td', { class: 'num' }, eur(r.pagado)), h('td', { class: 'num ' + (r.pendiente > 0.004 ? 'neg' : 'pos') }, eur(r.pendiente)))))),
+        h('p', { class: 'small muted' }, 'Resumen por alumno sumando todas sus asignaturas. Para marcar pagos usa la vista «Por asignatura».'));
+    };
+    const grupos = db.grupos.filter((g) => g.tipo === 'AMPA').map((g) => ({ id: g.id, label: grupoNombre(g) }));
+    root.append(h('h2', null, 'Cobros de alumnos del AMPA'),
+      h('div', { class: 'card row' },
+        h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Trimestre'), selector(db.trimestres.map((t) => ({ id: t.id, label: t.nombre })), CB.trimId, (v) => { CB.trimId = v; pintar(); })),
+        h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Ver'), selector([{ id: 'asig', label: 'Por asignatura' }, { id: 'alumno', label: 'Por alumno' }], CB.vista, (v) => { CB.vista = v; pintar(); })),
+        h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Grupo'), selector(grupos, CB.grupo, (v) => { CB.grupo = v; pintar(); }, 'Todos')),
+        checkbox('Solo pendientes', CB.soloPend, (v) => { CB.soloPend = v; CB.keep = new Set(); pintar(); })),
+      kpis, cuerpo);
+    pintar();
+  },
+};
+
+'use strict';
+/* ===== PANTALLA: CUENTAS (ingresos y resumen por pagador) ===== */
+VIEWS.cuentas = {
+  render(root) {
+    const pagadores = () => [{ id: 'AMPA', label: 'AMPA' }, ...db.alumnos.map((a) => ({ id: a.id, label: a.nombre }))];
+    const fecha = h('input', { type: 'date', value: todayISO() }), imp = h('input', { type: 'number', step: '0.01', placeholder: '0,00' });
+    const cb = combo({ placeholder: 'Pagador (AMPA o alumno)…', items: pagadores, width: '260px' });
+    const anadir = () => {
+      const p = cb.get(); const v = Number(imp.value);
+      if (!p) return toast('Elige un pagador de la lista.', 'err');
+      if (!isoValida(fecha.value)) return toast('La fecha no es válida.', 'err');
+      if (!v) return toast('Escribe el importe.', 'err');
+      db.ingresos.push({ id: nextId('ingreso'), fecha: fecha.value, pagador: p.id, importe: v }); commit(); toast('Ingreso registrado.', 'ok'); render();
+    };
+    const a = cuentaAmpa();
+    const l = (txt, v, cls) => h('tr', null, h('td', null, txt), h('td', { class: 'num ' + (cls || '') }, v));
+    const ampaTabla = h('table', { class: 't', style: 'max-width:520px' },
+      l('Horas dadas al AMPA', String(a.horas).replace('.', ',') + ' h'), l('Me corresponde (15 €/h por hora real)', eur(a.total)),
+      l('Alumnos del AMPA que me han pagado a mí', '− ' + eur(a.pagadoYo)), l('Ingresos que me ha hecho el AMPA', '− ' + eur(a.ingresos)),
+      l(a.pendiente >= 0 ? 'El AMPA me debe' : 'Yo debo al AMPA', eur(Math.abs(a.pendiente)), a.pendiente > 0.004 ? 'neg' : 'pos'));
+    const abiertos = VIEWS.cuentas._abiertos || (VIEWS.cuentas._abiertos = new Set());
+    const filasDeuda = deudasPagadores();
+    const tbD = h('table', { class: 't' }, h('tr', null, ['Pagador', 'Clases dadas', 'Clases pagadas', 'Clases pendientes', 'Total', 'Pagado', 'Debe'].map((x, i) => h('th', { class: i ? 'num' : '' }, x))));
+    filasDeuda.forEach((r) => {
+      const k = r.esAmpa ? 'AMPA' : r.alumnoId, ab = abiertos.has(k);
+      tbD.append(h('tr', { style: 'cursor:pointer', title: 'Pincha para ver el desglose', onclick: () => { if (ab) abiertos.delete(k); else abiertos.add(k); render(); } },
+        h('td', { class: 'bold' }, (ab ? '▾ ' : '▸ ') + r.nombre), h('td', { class: 'num' }, r.clases), h('td', { class: 'num' }, r.pagadas), h('td', { class: 'num' }, r.pendientes),
+        h('td', { class: 'num' }, eur(r.total)), h('td', { class: 'num' }, eur(r.ingresos)), h('td', { class: 'num ' + (r.pendiente > 0.004 ? 'neg' : 'pos') }, eur(r.pendiente))));
+      if (ab) tbD.append(h('tr', null, h('td', { colspan: 7, style: 'background:#f7f9fb;padding:6px 16px' },
+        r.detalle.length ? h('table', { class: 't', style: 'max-width:620px' }, h('tr', null, ['Fecha', 'Clase', 'Importe', 'Estado'].map((x, i) => h('th', { class: i === 2 ? 'num' : '' }, x))),
+          r.detalle.map((d) => h('tr', null, h('td', null, fmtFecha(d.fecha)), h('td', null, d.concepto), h('td', { class: 'num' }, eur(d.importe)), h('td', { class: d.pagada ? 'pos' : 'neg' }, d.pagada ? 'Pagada' : 'Pendiente'))))
+          : h('span', { class: 'small muted' }, 'Sin clases cobrables.'))));
+    });
+    const privTabla = h('div', null, h('div', { class: 'small muted', style: 'margin-bottom:6px' }, 'Lo que debe cada pagador, con o sin pagos hechos. Los pagos se aplican a las clases más antiguas primero. Pincha una fila para ver el desglose clase a clase.'), h('div', { style: 'overflow:auto' }, tbD));
+    const ing = db.ingresos.slice().sort((x, y) => (x.fecha < y.fecha ? 1 : x.fecha > y.fecha ? -1 : y.id - x.id));
+    const ingTabla = ing.length ? h('table', { class: 't' }, h('tr', null, ['Fecha', 'Pagador', 'Importe', ''].map((x) => h('th', null, x))),
+      ing.map((i) => h('tr', null,
+        h('td', null, h('input', { type: 'date', value: i.fecha, onchange: (e) => { if (isoValida(e.target.value)) { i.fecha = e.target.value; commit(); } } })),
+        h('td', { class: 'bold' }, i.pagador === 'AMPA' ? 'AMPA' : alumnoNombre(i.pagador)),
+        h('td', null, h('input', { type: 'number', step: '0.01', value: i.importe, onchange: (e) => { i.importe = Number(e.target.value) || 0; commit(); render(); } })),
+        h('td', null, h('button', { class: 'btn sm danger', onclick: async () => { if (await confirmar('Borrar ingreso', `¿Borrar el ingreso de ${i.pagador === 'AMPA' ? 'AMPA' : alumnoNombre(i.pagador)} (${eur(i.importe)})?`, 'Borrar', true)) { db.ingresos = db.ingresos.filter((x) => x !== i); commit(); render(); } } }, 'Borrar'))))) : h('div', { class: 'empty small' }, 'Aún no hay ingresos.');
+    root.append(h('h2', null, 'Cuentas'),
+      h('div', { class: 'card' }, h('h3', null, 'Nuevo ingreso (lo que me han pagado)'), h('div', { class: 'row' },
+        h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Fecha'), fecha), h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Pagador'), cb),
+        h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Importe (€)'), imp), h('button', { class: 'btn ok', onclick: anadir }, '➕ Añadir ingreso'))),
+      h('div', { class: 'card' }, h('h3', null, 'AMPA'), ampaTabla), h('div', { class: 'card' }, h('h3', null, 'Deudas por pagador'), privTabla),
+      h('div', { class: 'card', style: 'padding:0' }, h('h3', { style: 'padding:12px 16px 0' }, 'Ingresos registrados'), ingTabla));
+  },
+};
+
+'use strict';
+/* ===== PANTALLA: GESTION (alumnos, grupos, inscripciones, ajustes) ===== */
+const GS = { sub: 'alumnos', busca: '', buscaIns: '' };
+const cursoItems = () => db.cursos.slice().sort((a, b) => a.orden - b.orden).map((c) => ({ id: c.id, label: c.nombre }));
+function rerGestion() { const r = vaciar($('#vista')); VIEWS.gestion.render(r); }
+function nombreLibre(nombre, exceptoId) { return !db.alumnos.some((a) => a.id !== exceptoId && norm(a.nombre) === norm(nombre)); }
+const limpio = (s) => String(s || '').replace(/\s+/g, ' ').trim();
+
+/* ---------------- ALUMNOS ---------------- */
+function gAlumnos(box) {
+  const nom = h('input', { type: 'text', placeholder: 'Nombre y apellidos', style: 'width:260px' }); let curSel = db.cursos[0] ? '' : '';
+  const cur = selector(cursoItems(), '', (v) => { curSel = v; }, 'Curso…'), notas = h('input', { type: 'text', placeholder: 'Notas (opcional)', style: 'width:220px' });
+  const add = () => {
+    const n = limpio(nom.value); if (!n) return toast('Escribe el nombre del alumno.', 'err');
+    if (!nombreLibre(n)) return toast('Ya existe un alumno con ese nombre. Si es otra persona, añade una inicial o apellido.', 'err');
+    if (!curSel) return toast('Elige el curso del alumno.', 'err');
+    db.alumnos.push({ id: nextId('alumno'), nombre: n, cursoId: curSel, notas: limpio(notas.value) }); commit(); toast('Alumno añadido: ' + n, 'ok'); rerGestion();
+  };
+  nom.addEventListener('keydown', (e) => { if (e.key === 'Enter') add(); });
+  box.append(h('div', { class: 'card' }, h('h3', null, 'Nuevo alumno'), h('div', { class: 'row' }, h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Nombre'), nom),
+    h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Curso'), cur), h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Notas'), notas), h('button', { class: 'btn ok', onclick: add }, '➕ Añadir alumno'))));
+  const tabla = h('div', { class: 'card', style: 'padding:0;overflow:auto' });
+  const pintar = () => {
+    vaciar(tabla); const q = norm(GS.busca);
+    const lista = db.alumnos.slice().sort((a, b) => a.nombre.localeCompare(b.nombre, 'es')).filter((a) => !q || norm(a.nombre).includes(q));
+    if (!lista.length) { tabla.append(h('div', { class: 'empty' }, db.alumnos.length ? 'Sin coincidencias.' : 'Aún no hay alumnos. Añade el primero arriba.')); return; }
+    tabla.append(h('table', { class: 't' }, h('tr', null, ['Alumno (editable)', 'Curso', 'Notas', 'Grupos vigentes', ''].map((x) => h('th', null, x))),
+      lista.map((a) => {
+        const vig = db.inscripciones.filter((i) => i.alumnoId === a.id && !i.baja).map((i) => grupoNombre(i.grupoId));
+        const ni = h('input', { type: 'text', value: a.nombre, style: 'width:240px', onchange: () => {
+          const n = limpio(ni.value); if (!n) { ni.value = a.nombre; return toast('El nombre no puede estar vacío.', 'err'); }
+          if (!nombreLibre(n, a.id)) { ni.value = a.nombre; return toast('Ya existe otro alumno con ese nombre.', 'err'); }
+          a.nombre = n; commit(); toast('Nombre cambiado en todos los partes y cuentas.', 'ok'); } });
+        return h('tr', null, h('td', null, ni),
+          h('td', null, selector(cursoItems(), a.cursoId, (v) => { a.cursoId = v || null; commit(); pintar(); }, '—')),
+          h('td', null, h('input', { type: 'text', value: a.notas || '', style: 'width:200px', onchange: (e) => { a.notas = e.target.value; commit(); } })),
+          h('td', { class: 'small' }, vig.length ? vig.join(' · ') : h('span', { class: 'muted' }, 'ninguno')),
+          h('td', null, h('button', { class: 'btn sm danger', onclick: async () => {
+            const usado = db.inscripciones.some((i) => i.alumnoId === a.id) || db.partes.some((p) => p.asist.some((x) => x.alumnoId === a.id)) || db.ingresos.some((i) => i.pagador === a.id) || db.pagosAmpa.some((p) => p.alumnoId === a.id);
+            if (usado) return avisar('No se puede borrar', 'Este alumno tiene inscripciones, partes o pagos. Se conserva para no perder el histórico (puedes darlo de baja de sus grupos).');
+            if (await confirmar('Borrar alumno', `¿Borrar a ${a.nombre}?`, 'Borrar', true)) { db.alumnos = db.alumnos.filter((x) => x !== a); commit(); rerGestion(); } } }, 'Borrar')));
+      })));
+  };
+  box.append(h('input', { type: 'search', placeholder: 'Buscar alumno…', value: GS.busca, style: 'margin-bottom:10px;width:260px', oninput: (e) => { GS.busca = e.target.value; pintar(); } }), tabla); pintar();
+}
+
+/* ---------------- GRUPOS ---------------- */
+function gGrupos(box) {
+  let cur = '', asig = '', tipo = 'AMPA';
+  const asigSel = h('select');
+  const cargarAsig = () => { vaciar(asigSel); asigSel.append(...optsSel(db.oferta.filter(([, c]) => c === cur).map(([a]) => ({ id: a, label: asigNombre(a) })), '', cur ? 'Asignatura…' : 'Elige primero el curso')); asig = ''; };
+  cargarAsig(); asigSel.onchange = () => { asig = asigSel.value ? Number(asigSel.value) : ''; };
+  const crear = () => {
+    if (!cur || !asig) return toast('Elige curso y asignatura.', 'err');
+    if (!enOferta(asig, cur)) return toast('Esa asignatura no se da en ese curso (revisa la oferta en Ajustes).', 'err');
+    if (db.grupos.some((g) => g.asigId === asig && g.cursoId === cur && g.tipo === tipo)) return toast('Ese grupo ya existe.', 'err');
+    db.grupos.push({ id: nextId('grupo'), asigId: asig, cursoId: cur, tipo, franja: nextId('franja'), activo: true }); commit(); toast('Grupo creado.', 'ok'); rerGestion();
+  };
+  box.append(h('div', { class: 'card' }, h('h3', null, 'Nuevo grupo (asignatura + curso + tipo)'), h('div', { class: 'row' },
+    h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Curso'), selector(cursoItems(), '', (v) => { cur = v; cargarAsig(); }, 'Curso…')),
+    h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Asignatura (solo las que se dan en ese curso)'), asigSel),
+    h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Tipo'), selector([{ id: 'AMPA', label: 'AMPA' }, { id: 'Privado', label: 'Privado' }], tipo, (v) => { tipo = v; })),
+    h('button', { class: 'btn ok', onclick: crear }, '➕ Crear grupo'))));
+  const todos = db.grupos.slice().sort((a, b) => cursoOrden(a.cursoId) - cursoOrden(b.cursoId) || grupoNombre(a).localeCompare(grupoNombre(b), 'es'));
+  box.append(h('div', { class: 'card', style: 'padding:0;overflow:auto' }, h('table', { class: 't' },
+    h('tr', null, ['Grupo', 'Activo', 'Da clase a la misma hora que…', 'Alumnos vigentes', ''].map((x) => h('th', null, x))),
+    todos.map((g) => {
+      const mismos = db.grupos.filter((x) => x.franja === g.franja && x.id !== g.id);
+      const opts = db.grupos.filter((x) => x.id !== g.id && x.franja !== g.franja && x.tipo === g.tipo && x.activo);
+      const nv = new Set(db.inscripciones.filter((i) => i.grupoId === g.id && !i.baja).map((i) => i.alumnoId)).size;
+      const jsel = selector(opts.map((x) => ({ id: x.id, label: grupoNombre(x) })), '', () => {}, 'Juntar con…');
+      return h('tr', null, h('td', { class: 'bold' }, grupoNombre(g)),
+        h('td', null, checkbox('', g.activo, (v) => { g.activo = v; commit(); })),
+        h('td', { class: 'small' }, mismos.length ? mismos.map((x) => grupoNombre(x)).join(' · ') : h('span', { class: 'muted' }, 'nadie (hora propia)')),
+        h('td', { class: 'num' }, nv),
+        h('td', { style: 'white-space:nowrap' }, jsel, ' ', h('button', { class: 'btn sm', onclick: () => {
+          if (!jsel.value) return toast('Elige con qué grupo juntarlo.', 'err');
+          const o = grupoById(Number(jsel.value)), vieja = o.franja; db.grupos.forEach((x) => { if (x.franja === vieja) x.franja = g.franja; });
+          commit(); toast('Ahora salen juntos en el Parte. Los partes ya guardados no cambian.', 'ok'); rerGestion(); } }, 'Juntar'),
+          mismos.length ? [' ', h('button', { class: 'btn sm', onclick: () => { g.franja = nextId('franja'); commit(); toast('Ese grupo pasa a tener su propia hora.', 'ok'); rerGestion(); } }, 'Separar')] : null));
+    }))), h('p', { class: 'small muted' }, 'Juntar o separar solo cambia cómo se agrupan en el Parte a partir de ahora; no toca ningún dato anterior. Desactivar un grupo lo oculta del Parte sin borrar su histórico.'));
+}
+
+/* ---------------- INSCRIPCIONES ---------------- */
+function gInscripciones(box) {
+  let alu = null;
+  const fecha = h('input', { type: 'date', value: todayISO() });
+  const cbA = combo({ placeholder: 'Alumno…', items: () => db.alumnos.map((a) => ({ id: a.id, label: a.nombre })), width: '240px', onSelect: (i) => { alu = byId(db.alumnos, i.id); cbG.clear(); cbG.input.focus(); } });
+  const gItems = () => {
+    const mios = db.grupos.filter((g) => g.activo && alu && g.cursoId === alu.cursoId);
+    return (alu ? mios : db.grupos.filter((g) => g.activo)).map((g) => ({ id: g.id, label: grupoNombre(g) }));
+  };
+  const cbG = combo({ placeholder: 'Grupo (los de su curso)…', items: gItems, width: '300px' });
+  const inscribir = async () => {
+    const a = cbA.get() && byId(db.alumnos, cbA.get().id); if (!a) return toast('Elige un alumno de la lista.', 'err');
+    if (!isoValida(fecha.value)) return toast('La fecha de alta no es válida.', 'err');
+    let g = cbG.get() ? grupoById(cbG.get().id) : db.grupos.find((x) => norm(grupoNombre(x)) === norm(cbG.text()));
+    if (!g) return toast('Ese grupo no existe. Elige uno de la lista o créalo en Grupos.', 'err');
+    if (!g.activo) return toast('Ese grupo está desactivado.', 'err');
+    if (db.inscripciones.some((i) => i.alumnoId === a.id && i.grupoId === g.id && !i.baja)) return toast('Ese alumno ya está inscrito en ese grupo.', 'err');
+    if (a.cursoId !== g.cursoId && !(await confirmar('Grupo de otro curso', `${a.nombre} está en ${cursoNombre(a.cursoId)} y ${grupoNombre(g)} es de ${cursoNombre(g.cursoId)}. ¿Inscribirlo igualmente?`, 'Inscribir igualmente'))) return;
+    db.inscripciones.push({ id: nextId('insc'), alumnoId: a.id, grupoId: g.id, alta: fecha.value, baja: null }); commit();
+    toast(`${a.nombre} inscrito en ${grupoNombre(g)} desde el ${fmtFecha(fecha.value)}.`, 'ok'); cbG.clear(); pintar();
+  };
+  box.append(h('div', { class: 'card' }, h('h3', null, 'Inscribir un alumno en un grupo'), h('div', { class: 'row' },
+    h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Alumno'), cbA), h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Grupo'), cbG),
+    h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Fecha de alta (hoy por defecto)'), fecha), h('button', { class: 'btn ok', onclick: inscribir }, '➕ Inscribir')),
+    h('p', { class: 'small muted', style: 'margin:8px 0 0' }, 'Se ofrecen los grupos del curso del alumno. Para uno de otro curso escribe su nombre exacto y te avisaré. Si la clase ya la diste, pon la fecha de alta real (p. ej. el día que empezó) para que salga en esos partes.')));
+  const tabla = h('div', { class: 'card', style: 'padding:0;overflow:auto' });
+  function pintar() {
+    vaciar(tabla); const q = norm(GS.buscaIns);
+    const lista = db.inscripciones.slice().sort((a, b) => alumnoNombre(a.alumnoId).localeCompare(alumnoNombre(b.alumnoId), 'es') || (a.alta < b.alta ? -1 : 1))
+      .filter((i) => !q || norm(alumnoNombre(i.alumnoId) + ' ' + grupoNombre(i.grupoId)).includes(q));
+    if (!lista.length) { tabla.append(h('div', { class: 'empty' }, 'No hay inscripciones.')); return; }
+    tabla.append(h('table', { class: 't' }, h('tr', null, ['Alumno', 'Grupo', 'Alta', 'Baja (vacío = sigue)', ''].map((x) => h('th', null, x))), lista.map((i) => {
+      const al = h('input', { type: 'date', value: i.alta, onchange: (e) => { if (isoValida(e.target.value) && (!i.baja || e.target.value <= i.baja)) { i.alta = e.target.value; commit(); } else { e.target.value = i.alta; toast('Fecha no válida (el alta no puede ser posterior a la baja).', 'err'); } } });
+      const ba = h('input', { type: 'date', value: i.baja || '', onchange: (e) => { const v = e.target.value; if (!v) { i.baja = null; commit(); pintar(); } else if (isoValida(v) && v >= i.alta) { i.baja = v; commit(); pintar(); } else { e.target.value = i.baja || ''; toast('La baja no puede ser anterior al alta.', 'err'); } } });
+      return h('tr', null, h('td', { class: 'bold' }, alumnoNombre(i.alumnoId)), h('td', null, grupoNombre(i.grupoId)), h('td', null, al), h('td', null, ba, ' ', i.baja ? null : h('button', { class: 'btn sm', onclick: () => { i.baja = todayISO() >= i.alta ? todayISO() : i.alta; commit(); toast('Baja desde hoy: ese día ya no cuenta.', 'ok'); pintar(); } }, 'Baja hoy')),
+        h('td', null, h('button', { class: 'btn sm danger', onclick: async () => {
+          if (db.partes.some((p) => p.asist.some((a) => a.alumnoId === i.alumnoId && a.grupoId === i.grupoId))) return avisar('No se puede borrar', 'Ya hay asistencias de este alumno en ese grupo. Usa la fecha de baja o corrige las fechas.');
+          if (await confirmar('Borrar inscripción', '¿Borrar esta inscripción (hecha por error)?', 'Borrar', true)) { db.inscripciones = db.inscripciones.filter((x) => x !== i); commit(); pintar(); } } }, 'Borrar')));
+    })));
+  }
+  box.append(h('input', { type: 'search', placeholder: 'Buscar por alumno o grupo…', value: GS.buscaIns, style: 'margin-bottom:10px;width:280px', oninput: (e) => { GS.buscaIns = e.target.value; pintar(); } }), tabla); pintar();
+}
+
+'use strict';
+/* ===== GESTION: ajustes (precios, trimestres, oferta) y pantalla ===== */
+function gAjustes(box) {
+  const a = db.ajustes, campos = [['tarifaAmpa', 'Cobro al AMPA por hora real (€)'], ['precioAlumnoAmpa', 'Cada alumno del AMPA paga por hora (€)'], ['privIndividual', 'Clase privada: precio/hora con 1 alumno cobrable (€)'], ['privGrupo', 'Clase privada: precio/hora por alumno con 2 o más (€)']];
+  box.append(h('div', { class: 'card' }, h('h3', null, 'Precios'), h('div', { class: 'row' }, campos.map(([k, t]) => h('div', { class: 'col' }, h('label', { class: 'lbl' }, t),
+    h('input', { type: 'number', step: '0.01', min: '0', value: a[k], onchange: (e) => { const v = Number(e.target.value); if (v >= 0) { a[k] = v; commit(); toast('Precio guardado. Solo afecta a los partes que guardes a partir de ahora.', 'ok'); } } })))),
+    h('p', { class: 'small muted', style: 'margin:8px 0 0' }, 'Cambiar un precio NO modifica los importes de partes ya guardados.')));
+  const tb = h('table', { class: 't' }, h('tr', null, ['Trimestre', 'Inicio', 'Fin', ''].map((x) => h('th', null, x))));
+  db.trimestres.slice().sort((x, y) => (x.inicio < y.inicio ? -1 : 1)).forEach((t) => {
+    const n = h('input', { type: 'text', value: t.nombre }), i = h('input', { type: 'date', value: t.inicio }), f = h('input', { type: 'date', value: t.fin });
+    const guardar = () => {
+      const nom = limpio(n.value);
+      if (!nom || !isoValida(i.value) || !isoValida(f.value) || f.value < i.value) { n.value = t.nombre; i.value = t.inicio; f.value = t.fin; return toast('Datos de trimestre no válidos.', 'err'); }
+      const sol = db.trimestres.find((x) => x !== t && i.value <= x.fin && f.value >= x.inicio);
+      if (sol) { n.value = t.nombre; i.value = t.inicio; f.value = t.fin; return toast('Se solapa con ' + sol.nombre + '.', 'err'); }
+      t.nombre = nom; t.inicio = i.value; t.fin = f.value; commit(); toast('Trimestre guardado.', 'ok');
+    };
+    [n, i, f].forEach((x) => x.addEventListener('change', guardar));
+    tb.append(h('tr', null, h('td', null, n), h('td', null, i), h('td', null, f), h('td', null, h('button', { class: 'btn sm danger', onclick: async () => {
+      if (db.pagosAmpa.some((p) => p.trimestreId === t.id) || db.partes.some((p) => p.trimestreForzado === t.id)) return avisar('No se puede borrar', 'Ese trimestre tiene pagos o partes asignados.');
+      if (await confirmar('Borrar trimestre', `¿Borrar ${t.nombre}? Los partes de esas fechas quedarán sin trimestre.`, 'Borrar', true)) { db.trimestres = db.trimestres.filter((x) => x !== t); commit(); rerGestion(); } } }, 'Borrar'))));
+  });
+  const nn = h('input', { type: 'text', placeholder: 'p. ej. 27-28 T1' }), ni = h('input', { type: 'date' }), nf = h('input', { type: 'date' });
+  tb.append(h('tr', null, h('td', null, nn), h('td', null, ni), h('td', null, nf), h('td', null, h('button', { class: 'btn sm ok', onclick: () => {
+    const nom = limpio(nn.value); if (!nom || !isoValida(ni.value) || !isoValida(nf.value) || nf.value < ni.value) return toast('Rellena nombre y fechas válidas.', 'err');
+    const sol = db.trimestres.find((x) => ni.value <= x.fin && nf.value >= x.inicio); if (sol) return toast('Se solapa con ' + sol.nombre + '.', 'err');
+    db.trimestres.push({ id: nextId('trim'), nombre: nom, inicio: ni.value, fin: nf.value }); commit(); rerGestion(); } }, '➕ Añadir'))));
+  box.append(h('div', { class: 'card', style: 'padding:0;overflow:auto' }, h('h3', { style: 'padding:12px 16px 0' }, 'Trimestres (calendario escolar; edítalos cuando quieras)'), tb));
+  // oferta
+  const cursos = db.cursos.slice().sort((x, y) => x.orden - y.orden), mt = h('table', { class: 't' }, h('tr', null, h('th', null, 'Asignatura \\ Curso'), cursos.map((c) => h('th', { style: 'text-align:center' }, c.nombre))));
+  db.asignaturas.forEach((s) => mt.append(h('tr', null, h('td', { class: 'bold' }, s.nombre), cursos.map((c) => h('td', { style: 'text-align:center' },
+    h('input', { type: 'checkbox', checked: enOferta(s.id, c.id), onchange: (e) => {
+      if (e.target.checked) db.oferta.push([s.id, c.id]);
+      else if (db.grupos.some((g) => g.asigId === s.id && g.cursoId === c.id)) { e.target.checked = true; return toast('Ya existen grupos de esa asignatura en ese curso.', 'err'); }
+      else db.oferta = db.oferta.filter(([x, y]) => !(x === s.id && y === c.id));
+      commit(); } }))))));
+  const na = h('input', { type: 'text', placeholder: 'Nueva asignatura' }), nc = h('input', { type: 'text', placeholder: 'Nuevo curso' });
+  box.append(h('div', { class: 'card', style: 'padding:0;overflow:auto' }, h('h3', { style: 'padding:12px 16px 0' }, 'Oferta: qué asignaturas se dan en cada curso'), mt),
+    h('div', { class: 'card row' },
+      h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Añadir asignatura'), h('div', { class: 'row', style: 'gap:6px' }, na, h('button', { class: 'btn sm ok', onclick: () => {
+        const n = limpio(na.value); if (!n) return; if (db.asignaturas.some((x) => norm(x.nombre) === norm(n))) return toast('Ya existe.', 'err');
+        db.asignaturas.push({ id: nextId('asig'), nombre: n }); commit(); rerGestion(); } }, 'Añadir'))),
+      h('div', { class: 'col' }, h('label', { class: 'lbl' }, 'Añadir curso'), h('div', { class: 'row', style: 'gap:6px' }, nc, h('button', { class: 'btn sm ok', onclick: () => {
+        const n = limpio(nc.value); if (!n) return; if (db.cursos.some((x) => norm(x.nombre) === norm(n))) return toast('Ya existe.', 'err');
+        db.cursos.push({ id: nextId('curso'), nombre: n, orden: Math.max(0, ...db.cursos.map((x) => x.orden)) + 1 }); commit(); rerGestion(); } }, 'Añadir'))),
+      h('div', { class: 'col grow' }, h('label', { class: 'lbl' }, 'Copia de seguridad'), h('div', { class: 'row', style: 'gap:6px' },
+        h('button', { class: 'btn sm', onclick: copiaManual }, 'Descargar copia'), h('button', { class: 'btn sm', onclick: abrirCopia }, 'Abrir copia'), h('button', { class: 'btn sm', onclick: () => exportarExcel() }, 'Exportar a Excel')))));
+}
+VIEWS.gestion = {
+  render(root) {
+    const subs = [['alumnos', 'Alumnos', gAlumnos], ['grupos', 'Grupos', gGrupos], ['insc', 'Inscripciones', gInscripciones], ['ajustes', 'Ajustes', gAjustes]];
+    root.append(h('h2', null, 'Gestión'), h('div', { class: 'subtabs' }, subs.map(([k, t]) => h('button', { class: GS.sub === k ? 'on' : '', onclick: () => { GS.sub = k; rerGestion(); } }, t))));
+    const box = h('div'); root.append(box); (subs.find((s) => s[0] === GS.sub) || subs[0])[2](box);
+  },
+};
+
+'use strict';
+/* ===== EXPORTAR A EXCEL (.xlsx minimo, sin librerias) ===== */
+const _crcT = (() => { const t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(b) { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = _crcT[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zipStore(files) { // files: [{name, data:Uint8Array}]
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  const u16 = (v) => [v & 255, (v >> 8) & 255], u32 = (v) => [v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >>> 24) & 255];
+  files.forEach((f) => {
+    const name = enc.encode(f.name), crc = crc32(f.data), n = f.data.length;
+    const head = new Uint8Array([0x50, 0x4b, 3, 4, ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(n), ...u32(n), ...u16(name.length), ...u16(0)]);
+    parts.push(head, name, f.data);
+    central.push(new Uint8Array([0x50, 0x4b, 1, 2, ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(n), ...u32(n), ...u16(name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), name);
+    off += head.length + name.length + n;
+  });
+  const cs = central.reduce((s, x) => s + x.length, 0);
+  const end = new Uint8Array([0x50, 0x4b, 5, 6, ...u16(0), ...u16(0), ...u16(files.length), ...u16(files.length), ...u32(cs), ...u32(off), ...u16(0)]);
+  return new Blob([...parts, ...central, end], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+}
+const xe = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '');
+function colL(i) { let s = ''; i++; while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; }
+function hojaXml(rows, widths) {
+  // celda: string | number | {v, b:true} | null
+  let x = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView workbookViewId="0"/></sheetViews>';
+  if (widths) x += '<cols>' + widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('') + '</cols>';
+  x += '<sheetData>';
+  rows.forEach((r, ri) => {
+    x += `<row r="${ri + 1}">`;
+    r.forEach((c, ci) => {
+      if (c == null || c === '') return;
+      const o = typeof c === 'object' ? c : { v: c }, ref = colL(ci) + (ri + 1), s = o.b ? ' s="1"' : '';
+      x += typeof o.v === 'number' ? `<c r="${ref}"${s}><v>${o.v}</v></c>` : `<c r="${ref}"${s} t="inlineStr"><is><t xml:space="preserve">${xe(o.v)}</t></is></c>`;
+    });
+    x += '</row>';
+  });
+  return x + '</sheetData></worksheet>';
+}
+function nombreHoja(n, usados) { let b = n.replace(/[\\\/\?\*\[\]:]/g, ' ').slice(0, 28).trim() || 'Hoja', k = b, i = 2; while (usados.has(k.toLowerCase())) k = b + ' ' + i++; usados.add(k.toLowerCase()); return k; }
+function exportarExcel() {
+  const B = (v) => ({ v, b: true }), hojas = [], usados = new Set();
+  const trims = db.trimestres.slice().sort((a, b) => (a.inicio < b.inicio ? -1 : 1));
+  trims.forEach((t) => {
+    const m = asistenciaMatriz({ trimId: t.id, asigId: '', cursoId: '', tipo: '' });
+    const rows = [[B('Grupo / alumno'), B('✓/A/S'), ...m.fechas.map((f) => B(fmtCorta(f)))]];
+    m.grupos.forEach((g) => {
+      rows.push([B(g.nombre), '', ...m.fechas.map((f) => (g.clases[f] ? '●' : ''))]);
+      g.filas.forEach((fl) => rows.push(['   ' + fl.alumno.nombre, `${fl.nA}/${fl.nAv}/${fl.nS}`, ...fl.celdas.map((c) => (c.vacio ? '' : c.gris ? '-' : c.sim + (c.noCobrar ? '*' : '')))]));
+    });
+    rows.push([]); rows.push(['✓ asistió · A falta con aviso · S falta sin aviso · * no se cobra · - no inscrito · ● clase dada']);
+    hojas.push({ nombre: nombreHoja('Asistencia ' + t.nombre, usados), rows, w: [34, 9, ...m.fechas.map(() => 6)] });
+  });
+  const cob = [[B('Trimestre'), B('Alumno'), B('Grupo'), B('Clases cobradas'), B('Importe'), B('Pagado'), B('Pagado a'), B('Importe pagado'), B('Fecha pago'), B('Pendiente')]];
+  trims.forEach((t) => cobrosAmpa(t.id).forEach((f) => cob.push([t.nombre, f.alumno, f.grupo, f.clases, f.importe, f.pago ? 'Sí' : 'No', f.pago ? f.pago.pagadoA : '', f.pago ? f.pago.importe : '', f.pago ? fmtFecha(f.pago.fecha) : '', f.pendiente])));
+  hojas.push({ nombre: nombreHoja('Cobros AMPA', usados), rows: cob, w: [12, 26, 34, 10, 10, 8, 9, 14, 12, 10] });
+  const a = cuentaAmpa(), cu = [[B('AMPA')], ['Horas dadas', a.horas], ['Me corresponde', a.total], ['Pagado a mí por alumnos del AMPA', a.pagadoYo], ['Ingresos del AMPA', a.ingresos], [a.pendiente >= 0 ? 'El AMPA me debe' : 'Yo debo al AMPA', Math.abs(a.pendiente)], [],
+    [B('Clases privadas')], [B('Pagador'), B('Clases totales'), B('Pagadas'), B('Pendientes'), B('Total'), B('Ingresado'), B('Pendiente')]];
+  cuentasPrivados().forEach((r) => cu.push([r.nombre, r.clases, r.pagadas, r.pendientes, r.total, r.ingresos, r.pendiente]));
+  cu.push([], [B('Ingresos registrados')], [B('Fecha'), B('Pagador'), B('Importe')]);
+  db.ingresos.slice().sort((x, y) => (x.fecha < y.fecha ? -1 : 1)).forEach((i) => cu.push([fmtFecha(i.fecha), i.pagador === 'AMPA' ? 'AMPA' : alumnoNombre(i.pagador), i.importe]));
+  hojas.push({ nombre: nombreHoja('Cuentas', usados), rows: cu, w: [38, 14, 10, 10, 10, 10, 10] });
+  const enc = new TextEncoder(), F = (name, txt) => ({ name, data: enc.encode(txt) }), X = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  const files = [
+    F('[Content_Types].xml', X + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' + hojas.map((_, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('') + '</Types>'),
+    F('_rels/.rels', X + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'),
+    F('xl/workbook.xml', X + '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' + hojas.map((s, i) => `<sheet name="${xe(s.nombre)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('') + '</sheets></workbook>'),
+    F('xl/_rels/workbook.xml.rels', X + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + hojas.map((_, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('') + `<Relationship Id="rId${hojas.length + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`),
+    F('xl/styles.xml', X + '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="10"/><name val="Arial"/></font><font><b/><sz val="10"/><name val="Arial"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs></styleSheet>'),
+    ...hojas.map((s, i) => F(`xl/worksheets/sheet${i + 1}.xml`, hojaXml(s.rows, s.w))),
+  ];
+  descargar(`control_clases_${todayISO()}.xlsx`, zipStore(files)); toast('Excel exportado.', 'ok');
+}
+
+'use strict';
+/* ===== ARRANQUE Y NAVEGACION ===== */
+const TABS = [['parte', 'Parte'], ['asistencia', 'Asistencia'], ['cobros', 'Cobros AMPA'], ['cuentas', 'Cuentas'], ['gestion', 'Gestión']];
+let vistaActual = 'parte';
+function ir(v) { vistaActual = v; render(); }
+function render() {
+  const nav = vaciar($('#tabs'));
+  TABS.forEach(([k, t]) => nav.append(h('button', { class: k === vistaActual ? 'on' : '', onclick: () => ir(k) }, t)));
+  const root = vaciar($('#vista'));
+  const v = VIEWS[vistaActual];
+  try { if (v) v.render(root); else root.append(h('div', { class: 'empty' }, 'Pantalla no disponible')); }
+  catch (e) { root.append(h('div', { class: 'card' }, h('b', null, 'Error al mostrar la pantalla: '), String(e && e.stack || e))); console.error(e); }
+}
+window.addEventListener('error', (e) => toast('Error: ' + e.message, 'err'));
+window.addEventListener('DOMContentLoaded', async () => {
+  await iniciarPersistencia();
+  render();
+});
+</script>
+</body>
+</html>
